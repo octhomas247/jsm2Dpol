@@ -1,0 +1,8 @@
+# Ignore everything
+*
+
+# Except the following files
+!Makefile
+!jsm2Dpol_sub.f90
+!jsm2Dpol.f90
+!jsm2Dpolcom.f90
