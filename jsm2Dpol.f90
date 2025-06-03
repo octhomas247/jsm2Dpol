@@ -88,7 +88,8 @@ USE abu_mod
 USE rdark_mod
 USE functions_mod
 !   USE jsm2Dpolcom
-    
+USE JSM_UTILS
+
 IMPLICIT NONE
 INTEGER, PARAMETER :: nfo = 283
 REAL(KIND=8), DIMENSION(nfo) :: welo, qoabspahs, qoabspahb
@@ -120,6 +121,7 @@ REAL(KIND=8) :: VSI, VC, VVAC, VEIS, VD
 INTEGER :: KPROL, J, IDG, IDGSI
 LOGICAL :: openedq
 CHARACTER(LEN=80) :: name_of_file
+! CHARACTER(LEN=128) :: MSG
 
 CHARACTER(LEN=*), PARAMETER :: INPUTS_DIR = './Input/'
 ! CHARACTER(LEN=256) :: FILE_SI, FILE_AC, FILE_DARK
@@ -199,6 +201,9 @@ REAL(KIND=8) :: TABSPAH, SUM, TNEW, TOTEMIS, W_MIE, WDUM, X, XM1, ZEITMRN
 ! c
 
 INTEGER :: i, IX, II, K, K1P25, K1P65, K2P3, k850, KJOT, KUV, KVISD, KVISV, L
+
+
+
 
 ! MODELFOLDER     = .FALSE.
 ! DARKFORSFOLDER  = .FALSE.
@@ -425,8 +430,10 @@ ENDIF
 ! ---------------------
 ! Get vvac, por, del0, ab from folder structure
 ! ---------------------
-PRINT *, 'VVAC, POR, DEL0, AB'
-WRITE(6,*), VVAC, POR, DEL0, AB
+! PRINT *, 'VVAC, POR, DEL0, AB'
+! WRITE(6,*), VVAC, POR, DEL0, AB
+
+CALL PRINT_DUST_PARAMS(VVAC, POR, DEL0, AB)
 
 ! FILE_SI   = INPUTS_DIR // 'd.QellipSi'
 ! FILE_AC   = INPUTS_DIR // 'd.QellipaC'
@@ -454,13 +461,18 @@ WRITE(6,*), VVAC, POR, DEL0, AB
 !         PRINT *, "❌ No valid folder structure detected. Aborting."
 !     END IF
 ! END IF
-CALL ENSURE_QFILES(VVAC, POR, DEL0, AB)
-CALL DETECT_DARKFORS_FOLDER(VVAC, POR, DEL0, AB, STATUS)
-CALL DETECT_MODEL_FOLDER(VVAC, POR, DEL0, AB, STATUS)
-! ---------------------
-PRINT *, 'VVAC, POR, DEL0, AB'
-WRITE(6,*), VVAC, POR, DEL0, AB
 
+CALL INITIALIZE_DUST_PARAMETERS(VVAC, POR, DEL0, AB, STATUS)
+
+! CALL ENSURE_QFILES(VVAC, POR, DEL0, AB)
+! CALL DETECT_DARKFORS_FOLDER(VVAC, POR, DEL0, AB, STATUS)
+! CALL DETECT_MODEL_FOLDER(VVAC, POR, DEL0, AB, STATUS)
+! CALL VERIFY_INPUT_VALUES(POR, VVAC)
+! CALL VERIFY_AB_DEL0(AB, DEL0)
+! ---------------------
+CALL PRINT_DUST_PARAMS(VVAC, POR, DEL0, AB)
+! PRINT *, 'VVAC, POR, DEL0, AB'
+! WRITE(6,*), VVAC, POR, DEL0, AB
 ! c ---------------------
 ! c Density rhc, rhsi,rhd:
 ! c
@@ -567,22 +579,24 @@ DO j = 1, 12
     ! c     WRITE(6,'(i5, a80)') j, cdumSi
     ! c     WRITE(6,'(i5, a80)') j, cdumaC
 
-    IF (j .NE. 1 .AND. j .NE. 2 .AND. j .NE. 4 .AND. j .NE. 11 .AND. j .LT. 13) THEN
-        IF (cdumSi .NE. cdumaC .OR. cdumSi .NE. cdumD) THEN
-            WRITE(6,*) 'In line j = ', j
-            WRITE(6,'(a80)') cdumSi
-            WRITE(6,'(a80)') cdumaC
-            WRITE(6,'(a80)') cdumD
+    ! IF (j .NE. 1 .AND. j .NE. 2 .AND. j .NE. 4 .AND. j .NE. 11 .AND. j .LT. 13) THEN
+    !     IF (cdumSi .NE. cdumaC .OR. cdumSi .NE. cdumD) THEN
+    !         WRITE(6,*) 'In line j = ', j
+    !         WRITE(6,'(a80)') cdumSi
+    !         WRITE(6,'(a80)') cdumaC
+    !         WRITE(6,'(a80)') cdumD
             ! STOP 'Check header in d.Qellip* files'
-        ENDIF
-    ENDIF
+        ! ENDIF
+    ! ENDIF
 ENDDO
        
 ! Read if grains are prolate/oblate, their ab, optical constant used, alignment idg, del0
 ! Could include a check that indeed those are the same for all d.Q files (not yet done)
+WRITE(6,*) 'Reading kprol, ab, comp, idgSi, del0 from d.QellipSi'
 READ(3, '(I4, F4.2, A10, I2, F7.1)') kprol, ab, comp, idg, del0
 ! READ(3, '(F4.2, F4.2, A10, F4.2, F7.1)') kprol, ab, comp, idg, del0
 WRITE(6,*) kprol, ab, comp, idgSi, del0
+CALL PRINT_DUST_PARAMS(VVAC, POR, DEL0, AB)
 ! PRINT *, 'VVAC, POR, DEL0, AB'
 ! WRITE(6,*), VVAC, POR, DEL0, AB
 
