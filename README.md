@@ -1,6 +1,6 @@
 # JSM2DPOL
 
-Outputs the dust cross-sections, intensity and polarised emission for the three-component model by Siebenmorgen R., 2023, A&A, 670A, 115. The relative masses of the components are derived from input dust abundances and size distributions. The relative mass of submicron-sized grains and the cross-sections ($cm^2/g$ ISM dust) are computed in the subroutine `sigtDark_EbvAvPol`.
+Test Outputs the dust cross-sections, intensity and polarised emission for the three-component model by Siebenmorgen R., 2023, A&A, 670A, 115. The relative masses of the components are derived from input dust abundances and size distributions. The relative mass of submicron-sized grains and the cross-sections ($cm^2/g$ ISM dust) are computed in the subroutine `sigtDark_EbvAvPol`.
 
 
 ## Dust Model
