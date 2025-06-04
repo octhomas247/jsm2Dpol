@@ -1,16 +1,15 @@
 # JSM2DPOL
 
 Computes dust cross-sections, extinction, and polarised emission based on the three-component model by  
-Siebenmorgen R. (2023, A&A, 670A, 115). Relative masses are derived from dust abundances and size distributions.  
+[Siebenmorgen R. (2023, A&A, 670A, 115)](https://arxiv.org/abs/2211.10146). Relative masses are derived from dust abundances and size distributions.  
 The subroutine `sigtDark_EbvAvPol` computes the cross-sections ($cm^2/g$ ISM dust) and the relative mass of submicron-sized grains.
 
 ---
 
 ## 🌌 Dust Model
 
-- **Cross-sections**: Based on Siebenmorgen (2023, A&A, 670A, 115)  
-- **Column density**: Based on Eq. (2) and Eq. (3) from  
-  Siebenmorgen & Chini (2023, arXiv:2311.03310)
+- **Cross-sections**: Based on [Siebenmorgen R. (2023, A&A, 670A, 115)](https://arxiv.org/abs/2211.10146)  
+- **Column density**: Based on Eq. (2) and Eq. (3) from [Siebenmorgen & Chini (2023)](https://arxiv.org/abs/2311.03310)
 
 ---
 
@@ -21,11 +20,11 @@ The subroutine `sigtDark_EbvAvPol` computes the cross-sections ($cm^2/g$ ISM dus
    - Nano-silicates (far-UV)
 
 2. **Large grains**  
-   - Prolate ($a/b = 2$), aligned (IDG model)  
+   - Prolate ($a/b > 1$), aligned (IDG model) or PDG (set via d.Q files)
    - Optical constants:  
-     - aSi: Demyk et al. (2023)  
-     - aC: Zubko (1996)  
-   - Radii: 6–260 nm (Mathis et al., 1977)
+     - aSi: [Demyk et al. (2022)](https://arxiv.org/abs/2209.06513)  
+     - aC: [Zubko (1996)](https://ui.adsabs.harvard.edu/abs/1996MNRAS.282.1321Z/abstract)  
+   - Radii: 6–260 nm ([Mathis et al., 1977](https://ui.adsabs.harvard.edu/abs/1977ApJ...217..425M/abstract))
 
 3. **Submicron-sized grains (Dark Dust)**  
    - Fluffy spheres: 20% aC, 30% Si, 50% vacuum  
@@ -35,7 +34,7 @@ The subroutine `sigtDark_EbvAvPol` computes the cross-sections ($cm^2/g$ ISM dus
 
 ## 📥 Input Files (in `./Input/`)
 
-- `d.Q*` files: Efficiency Q data for grain types (with porosity via Bruggeman rule), e.g.:  
+- `d.Q*` files: Efficiency Q data for grain types computed using the Bruggeman mixing rule for porosity treated as vaccuum inclusion, e.g.: 
   - `d.QellipaC`  
   - `d.QellipSi`  
   - `d.QellipDark`
@@ -103,15 +102,16 @@ Move the executable next to your `./Input/` and `./Output/` folders:
 ---
 
 ## 🧾 Version History
-
-- **26.11.2024** — Current version  
+- **05/2025** — Refactored modules, added reading dust parameters from d.Q files 
+- **04/2025** — Translated from FORTRAN77 to FORTRAN90  
+- **26.11.2024** — Updated version  
 - **24.04.2023** — Unified SpT with GAIA parallax distances  
-- **20.09.2022** — Updated optical constants (Demyk+22)  
+- **20.09.2022** — Updated optical constants ([Demyk+22](https://arxiv.org/abs/2209.06513))  
 - **04.12.2021** — Introduced dark dust  
-- **1991** — Original release (Siebenmorgen PhD; Siebenmorgen & Kruegel 1992, A&A)
+- **1991** — Original release (Siebenmorgen PhD; [Siebenmorgen & Kruegel 1992, A&A](https://adsabs.harvard.edu/full/1992A%26A...259..614S))
 
 ---
 
 ## 👤 Credits
 
-Please contact Ralf Siebenmorgen for any issues.  
+Please contact [Ralf Siebenmorgen](mailto:Ralf.Siebenmorgen@eso.org) for any issues.  

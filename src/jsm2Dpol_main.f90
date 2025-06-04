@@ -8,11 +8,6 @@ PROGRAM jsm2Dpol
 !      (cm^2/gramm-ISM-dust) are computed in the subroutine
 !      sigtDark_EbvAvPol
 ! 
-! 
-!      Compilation Instructions:
-!        gfortran -ffixed-line-length-132     jsm2Dpol.f sigtDark_AvEbvPol.f -o a.j
-!        gfortran -ffixed-line-length-132 -O5 jsm2Dpol.f sigtDark_AvEbvPol.f -o a.j
-! 
 !      Dust Model:
 !      1. Cross-sections:
 !       Based on Siebenmorgen R. (2023, A&A, 670A, 115).

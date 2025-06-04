@@ -6,6 +6,12 @@
 !README.md
 !src/
 !src/*.f90
+!example/
+!example/Input/
+!example/Input/*
+!example/Output/
+!example/Output/*
+!example/af90.j
 
 # Ignore build outputs and intermediate files
 af90.j
