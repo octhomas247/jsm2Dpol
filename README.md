@@ -38,6 +38,8 @@ The subroutine `sigtDark_EbvAvPol` computes the cross-sections ($cm^2/g$ ISM dus
   - `d.QellipaC`  
   - `d.QellipSi`  
   - `d.QellipDark`
+  - `d.Qmie_vGr`
+  - `d.Qmie_vSi`
 
 - `jsmTaufit.inp`:  
   Contains `tauV`, `Ebv_obs`, and `P_serk` (Serkowski polarisation fit)
@@ -50,6 +52,8 @@ The subroutine `sigtDark_EbvAvPol` computes the cross-sections ($cm^2/g$ ISM dus
   - Abundances: `abuc`, `abusi`, `abuvsi`, `abucvgr`, `abucpahs`
   - Sizes: `qmrn`, `alec`, `alesi`, `arad_polmin_aC`, `arad_polmin_Si`, `arad_polmax`, `aled`
 
+- `PAH2170.wq`:
+
 ---
 
 ## 📤 Output Files (in `./Output/`)
@@ -58,6 +62,8 @@ The subroutine `sigtDark_EbvAvPol` computes the cross-sections ($cm^2/g$ ISM dus
 - `Kappa4fit.out`: Observational wavelength range  
 - `PolKappa.out`: Polarised cross-sections (`sigp_*`, dark dust set to zero)  
 - `tau4fit.out`: Extinction/reddening curves (absolute and normalized)
+- `emis.out`: 
+- `emipol.out`:
 
 ---
 
@@ -75,8 +81,10 @@ All cross-sections ($K$) are in units of $cm^2/g$-dust, scaled to optical depth 
     │   ├── jsm2Dpol_mods.f90         # Config/constants/functions modules
     │   ├── jsm2Dpol_utils.f90        # General-purpose utilities
     │   └── jsm2Dpol_subroutines.f90  # Physics subroutines and shared variables
-    ├── examples/
-    │   └── test_case_1/              # Sample inputs and outputs
+    ├── example/                      
+    │   ├── Input/                    # Sample set of inputs
+    │   ├── Output/               
+    │   └── af90.j               
     ├── Makefile                      # Build script
     ├── LICENSE
     └── README.md   

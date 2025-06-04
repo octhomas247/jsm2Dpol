@@ -1,17 +1,18 @@
-# Ignore everything by default
+# Ignore everything
 *
 
-# Allow core files and folders
+# But not these files/folders
 !Makefile
 !README.md
 !src/
 !src/*.f90
+
+# Include everything under example/
 !example/
-!example/Input/
-!example/Input/*
-!example/Output/
-!example/Output/*
-!example/af90.j
+!example/**
+
+# Explicitly include the compiled binary if needed
+# !example/af90.j
 
 # Ignore build outputs and intermediate files
 af90.j
