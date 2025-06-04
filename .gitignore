@@ -1,9 +1,17 @@
-# Ignore everything
+# Ignore everything by default
 *
 
-# Except the following files
+# Allow core files and folders
 !Makefile
-!jsm2Dpol_sub.f90
-!jsm2Dpol.f90
-!jsm2Dpolcom.f90
 !README.md
+!src/
+!src/*.f90
+
+# Ignore build outputs and intermediate files
+af90.j
+*.o
+*.mod
+
+# Optional: ignore logs or editor backups
+# *.log
+# *~

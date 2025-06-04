@@ -1,12 +1,18 @@
 # JSMF90 Makefile
 
-FC=gfortran -O5 -ffree-line-length-none -ffree-form
+FC = gfortran
+FFLAGS = -O3 -ffree-line-length-none -ffree-form
+SRC = src/jsm2Dpol_mods.f90 \
+      src/jsm2Dpol_utils.f90 \
+      src/jsm2Dpol_subroutines.f90 \
+      src/jsm2Dpol_main.f90
 
-all: jsm
-	echo "Building all: jsm"
+BIN = af90.j
 
-jsm: 
-	$(FC) jsm2Dpol_sub.f90 jsm2Dpol.f90 jsm2Dpolcom.f90 -o af90.j 
+all: $(BIN)
+
+$(BIN): $(SRC)
+	$(FC) $(FFLAGS) $(SRC) -o $(BIN)
 
 clean:
-	rm ./af90.j *.o *.mod
+	rm -f $(BIN) src/*.o src/*.mod

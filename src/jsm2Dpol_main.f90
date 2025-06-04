@@ -1,93 +1,81 @@
 PROGRAM jsm2Dpol
 
-! c     Outputs the dust cross-sections, intensity and polarised emission
-! c     for the three-component model by Siebenmorgen R., 2023, A&A, 670A,
-! c     115. The relative masses of the components are derived from input
-! c     dust abundances and size distributions. The relative mass of
-! c     submicron-sized grains and the cross-sections
-! c     (cm^2/gramm-ISM-dust) are computed in the subroutine
-! c     sigtDark_EbvAvPol
-! c
-! c
-! c     Compilation Instructions:
-! c       gfortran -ffixed-line-length-132     jsm2Dpol.f sigtDark_AvEbvPol.f -o a.j
-! c       gfortran -ffixed-line-length-132 -O5 jsm2Dpol.f sigtDark_AvEbvPol.f -o a.j
-! c
-! c     Dust Model:
-! c     1. Cross-sections:
-! c      Based on Siebenmorgen R. (2023, A&A, 670A, 115).
-! c     2. Column density estimation:
-! c        Follows Eq. (2) and Eq. (3) from Siebenmorgen & Chini (2023, 10.48550/arXiv.2311.03310).
-! c
-! c     Dust Components:
-! c     1) Nano-particles (VSG):
-! c        - Graphite + PAH (2175 AA bump, far-UV reddening).
-! c        - Nano-silicates (far-UV contribution).
-! c     2) Large grains:
-! c        - Prolate grains with a/b = 2, aligned (IDG alignment).
-! c        - Optical constants: Demyk et al. (2023) for aSi; Zubko (1996) for aC.
-! c        - Radii: 6 nm to ~260 nm (Mathis et al., 1977).
-! c     3) Submicron-sized grains (Dark Dust):
-! c        - Fluffy spheres (20% aC, 30% Si, 50% vacuum).
-! c        - Radii: 260 nm to ~3 microns.
-! c
-! c     WARNING: parameter for dust porosity 'por' is hardcoded in
-! c     jsm2Dpol.f and needs to be adjusted to match the files d.Q* which
-! c     include the grain efficiency computed using the Bruggeman mixing
-! c     rule for porosity treated as vaccuum inclusion ('por').
-      
-! c     Input (./Input/):
-! c       - jsm12fit.inp:
-! c         Dust parameters for fitting reddening curves:
-! c           - Abundances: abuc, abusi, abuvsi, abucvgr, abucpahs.
-! c           - Sizes: qmrn, alec, alesi, arad_polmin_aC, arad_polmin_Si, arad_polmax, aled.
-! c       - w12_vv2_Ralf_283wave.dat:
-! c         Wavelength grid for the dust model.
-! c       - jsmTaufit.inp:
-! c         Includes tauV and Ebv_obs for equations (2) and (3)  and P_serk polarisation of Serkowski fit.
-! c       - d.Q* files:
-! c         Grain efficiencies Q for various components.
-! c
-! c     Output (./Output/):
-! c       - Kappa.out:
-! c         Optical properties for absorption (sa_*) and scattering (ss_*).
-! c       - Kappa4fit.out:
-! c         Optical properties for observed wavelength ranges.
-! c       - PolKappa.out:
-! c         Polarization cross-sections (sigp_*). Dark dust: here: sigp_dark = 0.
-! c       - tau4fit.out:
-! c         Extinction and reddening curves (normalized and absolute).
-! c
-! c     Cross-Section Notation:
-! c     - Cross-sections (K) are in cm^2/g-dust and computed for each component.
-! c     - Converted to optical depth by multiplying by Nl, Nd.
-! c
-! c     Version History
-! c       - 26.11.2024: this version      
-! c       - 24.04.2023: Unified SpT (luminosity) with GAIA (parallax) distances.
-! c       - 20.09.2022: Updated optics (n, k) using Demyk+22 for X50A+E20R silicates.
-! c       - 04.12.2021: Included dark dust model.
-! c       - 1991: Original version (Siebenmorgen, PhD; Siebenmorgen & Kruegel, 1992, A&A).
-! c      For issues please contact me as author
-! c      Greetings, Ralf Siebenmorgen
-! c     ------------------------------------------------------------------
-! c
-!   include "jsm2Dpolcom.f90"
-USE constants_mod
-USE tempmrn_mod
-USE effi_mod
-USE vsg_mod
-USE vec_lr_mod
-USE vec_nf_mod
-USE vec_sig_mod
-USE fest_mod
-USE paheva_mod
-USE const_mod
-USE paraDark_mod
-USE abu_mod
-USE rdark_mod
-USE functions_mod
-!   USE jsm2Dpolcom
+!      Outputs the dust cross-sections, intensity and polarised emission
+!      for the three-component model by Siebenmorgen R., 2023, A&A, 670A,
+!      115. The relative masses of the components are derived from input
+!      dust abundances and size distributions. The relative mass of
+!      submicron-sized grains and the cross-sections
+!      (cm^2/gramm-ISM-dust) are computed in the subroutine
+!      sigtDark_EbvAvPol
+! 
+! 
+!      Compilation Instructions:
+!        gfortran -ffixed-line-length-132     jsm2Dpol.f sigtDark_AvEbvPol.f -o a.j
+!        gfortran -ffixed-line-length-132 -O5 jsm2Dpol.f sigtDark_AvEbvPol.f -o a.j
+! 
+!      Dust Model:
+!      1. Cross-sections:
+!       Based on Siebenmorgen R. (2023, A&A, 670A, 115).
+!      2. Column density estimation:
+!         Follows Eq. (2) and Eq. (3) from Siebenmorgen & Chini (2023, 10.48550/arXiv.2311.03310).
+! 
+!      Dust Components:
+!      1) Nano-particles (VSG):
+!         - Graphite + PAH (2175 AA bump, far-UV reddening).
+!         - Nano-silicates (far-UV contribution).
+!      2) Large grains:
+!         - Prolate grains with a/b = 2, aligned (IDG alignment).
+!         - Optical constants: Demyk et al. (2023) for aSi; Zubko (1996) for aC.
+!         - Radii: 6 nm to ~260 nm (Mathis et al., 1977).
+!      3) Submicron-sized grains (Dark Dust):
+!         - Fluffy spheres (20% aC, 30% Si, 50% vacuum).
+!         - Radii: 260 nm to ~3 microns.
+! 
+!      WARNING: parameter for dust porosity 'por' is hardcoded in
+!      jsm2Dpol.f and needs to be adjusted to match the files d.Q* which
+!      include the grain efficiency computed using the Bruggeman mixing
+!      rule for porosity treated as vaccuum inclusion ('por').
+   
+!      Input (./Input/):
+!        - jsm12fit.inp:
+!          Dust parameters for fitting reddening curves:
+!            - Abundances: abuc, abusi, abuvsi, abucvgr, abucpahs.
+!            - Sizes: qmrn, alec, alesi, arad_polmin_aC, arad_polmin_Si, arad_polmax, aled.
+!        - w12_vv2_Ralf_283wave.dat:
+!          Wavelength grid for the dust model.
+!        - jsmTaufit.inp:
+!          Includes tauV and Ebv_obs for equations (2) and (3)  and P_serk polarisation of Serkowski fit.
+!        - d.Q* files:
+!          Grain efficiencies Q for various components.
+! 
+!      Output (./Output/):
+!        - Kappa.out:
+!          Optical properties for absorption (sa_*) and scattering (ss_*).
+!        - Kappa4fit.out:
+!          Optical properties for observed wavelength ranges.
+!        - PolKappa.out:
+!          Polarization cross-sections (sigp_*). Dark dust: here: sigp_dark = 0.
+!        - tau4fit.out:
+!          Extinction and reddening curves (normalized and absolute).
+! 
+!      Cross-Section Notation:
+!      - Cross-sections (K) are in cm^2/g-dust and computed for each component.
+!      - Converted to optical depth by multiplying by Nl, Nd.
+! 
+!      Version History
+!        - 26.11.2024: this version      
+!        - 24.04.2023: Unified SpT (luminosity) with GAIA (parallax) distances.
+!        - 20.09.2022: Updated optics (n, k) using Demyk+22 for X50A+E20R silicates.
+!        - 04.12.2021: Included dark dust model.
+!        - 1991: Original version (Siebenmorgen, PhD; Siebenmorgen & Kruegel, 1992, A&A).
+!       For issues please contact me as author
+!       Greetings, Ralf Siebenmorgen
+!      ------------------------------------------------------------------
+
+USE config
+USE constants
+USE functions
+USE SUBROUTINES
 USE JSM_UTILS
 
 IMPLICIT NONE
@@ -98,9 +86,7 @@ REAL(KIND=8), DIMENSION(lr, nfo) :: qoac, qosc, goc, qopc, qocpc
 REAL(KIND=8), DIMENSION(lrsi, nfo) :: qoasi, qossi, gosi, qopsi, qocpsi
 REAL(KIND=8), DIMENSION(lrd, nfo) :: qoad, qosd, god, qopd, qocpd
 REAL(KIND=8), DIMENSION(lrv, nfo) :: qoavsi, qosvsi, govsi, qoagr, qosgr, gogr
-! REAL(KIND=8), DIMENSION(lrv, nfo) :: QAGR
 
-! c auf wel(nf) werden cross section interpliert:
 REAL(KIND=8), DIMENSION(nf) :: welv, weld, welov
 REAL(KIND=8), DIMENSION(nf) :: emi_pahs, emi_pahb, emi_vgr, emi_vsi, emi_d
 REAL(KIND=8), DIMENSION(nf) :: emip_c, emip_si, emip_d, emip_t
@@ -120,14 +106,9 @@ REAL(KIND=8) :: AB, DEL0, ADUM, ABUCPAHSB, POR
 REAL(KIND=8) :: VSI, VC, VVAC, VEIS, VD
 INTEGER :: KPROL, J, IDG, IDGSI
 LOGICAL :: openedq
-CHARACTER(LEN=80) :: name_of_file
-! CHARACTER(LEN=128) :: MSG
 
 CHARACTER(LEN=*), PARAMETER :: INPUTS_DIR = './Input/'
-! CHARACTER(LEN=256) :: FILE_SI, FILE_AC, FILE_DARK
-! LOGICAL :: EXISTS_SI, EXISTS_AC, EXISTS_DARK
 
-! LOGICAL :: MODELFOLDER, DARKFORSFOLDER
 LOGICAL :: STATUS
 
 
@@ -321,7 +302,7 @@ abuvsi   = 13.19D0
 abucpahs = 10.0D0
 abucpahb = 0.0D0
 
-fDark    = 0.5D0        ! fraction of dust mass in Dark dust
+fDark    = 0.5D0        ! fraction of dust mass in Dark Dust
 
 zcpahs   = 30
 zcpahb   = 0
@@ -427,118 +408,45 @@ ENDIF
 
 
 
-! ---------------------
-! Get vvac, por, del0, ab from folder structure
-! ---------------------
-! PRINT *, 'VVAC, POR, DEL0, AB'
-! WRITE(6,*), VVAC, POR, DEL0, AB
-
+! Print current dust parameters vvac, por, del0, ab
 CALL PRINT_DUST_PARAMS(VVAC, POR, DEL0, AB)
 
-! FILE_SI   = INPUTS_DIR // 'd.QellipSi'
-! FILE_AC   = INPUTS_DIR // 'd.QellipaC'
-! FILE_DARK = INPUTS_DIR // 'd.QellipDark'
-
-! ! Check if files already exist
-! INQUIRE(FILE=FILE_SI,   EXIST=EXISTS_SI)
-! INQUIRE(FILE=FILE_AC,   EXIST=EXISTS_AC)
-! INQUIRE(FILE=FILE_DARK, EXIST=EXISTS_DARK)
-
-! IF (.NOT. (EXISTS_SI .AND. EXISTS_AC .AND. EXISTS_DARK)) THEN
-!     PRINT *, 'Some Q files are missing — detecting folder and copying files.'
-
-
-!     CALL DETECT_MODEL_FOLDER(VVAC, POR, DEL0, AB, MODELFOLDER)
-!     IF (.NOT. MODELFOLDER) THEN
-!         CALL DETECT_DARKFORS_FOLDER(VVAC, POR, DEL0, AB, DARKFORSFOLDER)
-!     END IF
-
-! ! PRINT *, 'VVAC, POR, DEL0, AB'
-! ! WRITE(6,*), VVAC, POR, DEL0, AB
-!     IF (MODELFOLDER .OR. DARKFORSFOLDER) THEN
-!         CALL COPY_QFILES(VVAC, POR, DEL0, AB, MODELFOLDER)
-!     ELSE
-!         PRINT *, "❌ No valid folder structure detected. Aborting."
-!     END IF
-! END IF
-
+! Try to read vvac, por, del0, ab from d.Q* files
+! If files are missing and if in known file structure, 
+! try to fetch d.Q* files from library /Qfile_tv/
 CALL INITIALIZE_DUST_PARAMETERS(VVAC, POR, DEL0, AB, STATUS)
 
-! CALL ENSURE_QFILES(VVAC, POR, DEL0, AB)
-! CALL DETECT_DARKFORS_FOLDER(VVAC, POR, DEL0, AB, STATUS)
-! CALL DETECT_MODEL_FOLDER(VVAC, POR, DEL0, AB, STATUS)
-! CALL VERIFY_INPUT_VALUES(POR, VVAC)
-! CALL VERIFY_AB_DEL0(AB, DEL0)
-! ---------------------
+! Print current dust parameters vvac, por, del0, ab
 CALL PRINT_DUST_PARAMS(VVAC, POR, DEL0, AB)
-! PRINT *, 'VVAC, POR, DEL0, AB'
-! WRITE(6,*), VVAC, POR, DEL0, AB
-! c ---------------------
-! c Density rhc, rhsi,rhd:
-! c
-! por = 0.10
-! rhsi = rhsiX * 0.97 / (1.0 + por) + rhsiE20 * 0.03 / (1.0 + por)
-! wmolsi = wmolsiX50 * 0.97 + wmolsiE20 * 0.03
-! rhc = rhc / (1.0 + por)
-! write(6,*) por, por
-! call GET_POR('./Input/d.QellipSi', por) ! no por, 0.10
-! call GET_POR('./Input/d.QellipaC_por00_ab2', por) ! 0.00
-! call GET_POR('./Input/d.QSi_X922E028V005_lrd201', por) ! por = 0.05
-! call GET_POR('./Input/d.QSi_X922E028V005_idg60_d10.0_po05_ab2', por) ! po(r) = 0.05
 
-! write(6,*) por, por
-
-! WRITE(6,*) ' *** 5% vacuum and mix Demyk+22 X50A(92.2%)+E20R(2.8%) per volume'
-! WRITE(6, '(a40, 1f7.2)') ' *** porosity of aC and SI Mix  por = ', por
-! CLOSE(UNIT=4)
 WRITE(6, '(a40, 1p4e10.2)') ' *** rhc, rhgr, rhsi, wmolsi        = ', rhc, rhgr, rhsi, wmolsi
-
 
 OPEN(UNIT=3, FILE=INPUTS_DIR // 'd.QellipSi', FORM='formatted')
 OPEN(UNIT=4, FILE=INPUTS_DIR // 'd.QellipaC', FORM='formatted')
 OPEN(UNIT=7, FILE=INPUTS_DIR // 'd.QellipDark', FORM='formatted')
-
-! OPEN(UNIT=3, FILE='./Input/d.QellipSi', FORM='formatted')
-! OPEN(UNIT=4, FILE='./Input/d.QellipaC', FORM='formatted')
-! OPEN(UNIT=7, FILE='./Input/d.QellipDark', FORM='formatted')
 
 REWIND(UNIT=3)
 REWIND(UNIT=4)
 REWIND(UNIT=7)
 
 
-! IF (STATUS /= 0) THEN
-    ! PRINT *, "Detection failed, status code:", STATUS
-!  END IF
-! WRITE(6,*) , VVAC, POR, DEL0, AB
-! PRINT *, 'above here'
-! write(6,*) por
-! Getting POR from current working directory
-! call EXTRACT_POR_FROM_PATH(por)
-! write(6,*) por
-! Getting POR from (first) d.Q file
-! inquire(unit=3, opened=openedq, NAME=name_of_file)
-! call READ_POR_OR_VVAC(name_of_file, por, vvac)
-! write(6,*) 'POR=',por,'(',trim(name_of_file),')'
-
 ! por = 0.10
 rhsi = rhsiX * 0.97 / (1.0 + por) + rhsiE20 * 0.03 / (1.0 + por)
 wmolsi = wmolsiX50 * 0.97 + wmolsiE20 * 0.03
 rhc = rhc / (1.0 + por)
 
-! c   DARK dust : relative weights  in 1g Staub: aC, Si, Eis'
-! c   geweis = Masse(Eis) / Masse(aC+Si)  = 1d-6 (hier ohne Eis)
-! c   volvac = Volumenanteil des Vakuum bezogen auf gesamt Volumen (from input) 
-! c   Volume of porous Dark dust grain: Vd = Vsi+Vc+Vvac. 
-! c   Mean density of porous Dark dust grain in 1 gramm of mass is : 
-! c   rhd    = total mass porous grain / Vd
-! c
-! WRITE(6,*), 'VVAC, VSI, VC'
-! WRITE(6,*), VVAC, VSI, VC
-CALL SET_DARK_DUST_VOLUMES(VVAC, VSI, VC)
-! WRITE(6,*), 'VVAC, VSI, VC'
-! WRITE(6,*), VVAC, VSI, VC
 
+! -------------------------------------------
+!    DARK dust : relative weights  in 1g Staub: aC, Si, Eis'
+!    geweis = Masse(Eis) / Masse(aC+Si)  = 1d-6 (hier ohne Eis)
+!    volvac = Volumenanteil des Vakuum bezogen auf gesamt Volumen (from input) 
+!    Volume of porous Dark dust grain: Vd = Vsi+Vc+Vvac. 
+!    Mean density of porous Dark dust grain in 1 gramm of mass is : 
+!    rhd    = total mass porous grain / Vd
+! -------------------------------------------
+
+! Set Vsi, Vc according to Vvac (previously hardcoded)
+CALL SET_DARK_DUST_VOLUMES(VVAC, VSI, VC)
 ! Vsi  = 0.5
 ! Vc   = 0.3
 ! Vvac = 0.2
@@ -548,7 +456,7 @@ WRITE(6,*) ' Relative volume in Dark dust  :'
 WRITE(6,*) '      aC        Si        Eis       Vac       total'
 WRITE(6,'(1x,5f10.2)') Vc, Vsi, Veis, Vvac, (Vc + Vsi + Veis + Vvac)
 
-! c     mass in 1 gram of dust in aC and Si sub-particles;
+! mass in 1 gram of dust in aC and Si sub-particles:
 md_ac     = (Vc * rhc)   / (Vc * rhc + Vsi * rhsi)
 md_Si     = (Vsi * rhsi) / (Vc * rhc + Vsi * rhsi)
 md_aCSi   = md_ac / md_Si
@@ -558,14 +466,13 @@ Vd   = Vc + Vsi + Vvac
 rhd  = (Vc * rhc + Vsi * rhsi) / Vd ! density of porous grain
 WRITE(6,'(a35, f7.2)') '   Density of porous Dark dust = ', rhd
        
-! c
-! c     --------------------------------------------------------------------------------------------
-! c     Optics of dust - read Q's and interpolate to frequency grid of MRN, dark dust and vsgr, vsi
-! c     --------------------------------------------------------------------------------------------
-! c
-! c        MRN - Particles: Wavelengths, Absorption, and Scattering Efficiencies
-! c   from file d.QellipaC, d.QellipSi of the ellipsoid
-
+!
+! -------------------------------------------
+!   Optics of dust - read Q's and interpolate to frequency grid of MRN, dark dust and vsgr, vsi
+! -------------------------------------------
+!   MRN - particles: wavelengths, absorption, and scattering efficiencies
+!   from file d.QellipaC, d.QellipSi, d.QellipDark of the ellipsoid
+! -------------------------------------------
 PRINT*, '    ***     open:   d.QellipSi'
 PRINT*, '    ***     open:   d.QellipaC'
 PRINT*, '    ***     open:   d.QellipDark'
@@ -574,31 +481,15 @@ DO j = 1, 12
     READ(3,'(a80)') cdumSi
     READ(4,'(a80)') cdumaC
     READ(7,'(a80)') cdumD
-
-    ! c     Debugging: write the line and its contents for inspection
-    ! c     WRITE(6,'(i5, a80)') j, cdumSi
-    ! c     WRITE(6,'(i5, a80)') j, cdumaC
-
-    ! IF (j .NE. 1 .AND. j .NE. 2 .AND. j .NE. 4 .AND. j .NE. 11 .AND. j .LT. 13) THEN
-    !     IF (cdumSi .NE. cdumaC .OR. cdumSi .NE. cdumD) THEN
-    !         WRITE(6,*) 'In line j = ', j
-    !         WRITE(6,'(a80)') cdumSi
-    !         WRITE(6,'(a80)') cdumaC
-    !         WRITE(6,'(a80)') cdumD
-            ! STOP 'Check header in d.Qellip* files'
-        ! ENDIF
-    ! ENDIF
 ENDDO
        
-! Read if grains are prolate/oblate, their ab, optical constant used, alignment idg, del0
+! Read if grains are prolate/oblate, their ab, optical constants used, alignment idg, del0
 ! Could include a check that indeed those are the same for all d.Q files (not yet done)
 WRITE(6,*) 'Reading kprol, ab, comp, idgSi, del0 from d.QellipSi'
 READ(3, '(I4, F4.2, A10, I2, F7.1)') kprol, ab, comp, idg, del0
-! READ(3, '(F4.2, F4.2, A10, F4.2, F7.1)') kprol, ab, comp, idg, del0
 WRITE(6,*) kprol, ab, comp, idgSi, del0
+
 CALL PRINT_DUST_PARAMS(VVAC, POR, DEL0, AB)
-! PRINT *, 'VVAC, POR, DEL0, AB'
-! WRITE(6,*), VVAC, POR, DEL0, AB
 
 WRITE(6, '(A80)') cdumSI
 READ(4, '(A80)') cdumaC
@@ -613,7 +504,6 @@ READ(7, '(A80)') cdumaD
 ! WRITE(6,*) 'k=1: Oblate'
 
 DO k = 1, nfo
-
     ! Prolate silicates
     DO l = 1, lrsi
        READ(3,*) welo(k), amrn(l), OMEGA, qoasi(l,k), qopsi(l,k), qocpsi(l,k), qossi(l,k)
@@ -627,12 +517,12 @@ DO k = 1, nfo
         END IF
     END DO
  
-    ! Prolate aC: Anzahl von aC grain radii
+    ! Prolate aC: number of aC grain radii
     DO l = 1, lr
        READ(4,*) wdum, amrn(l), OMEGA, qoac(l,k), qopc(l,k), qocpc(l,k), qosc(l,k)
        ! WRITE(6, '(1P7E10.2, A5)') wdum, amrn(l), OMEGA, qoac(l,k), qopc(l,k), qocpc(l,k), qosc(l,k), ' aC'
        
-       qoac(l,k) = qoac(l,k) - qosc(l,k)  ! In d.q ist extinction gespeichert
+       qoac(l,k) = qoac(l,k) - qosc(l,k)  ! Extinction is stored in d.q
  
        IF (qoac(l,k) .LE. 0) THEN
             WRITE(6,*) "l,k = ", l, k
@@ -643,8 +533,8 @@ DO k = 1, nfo
     END DO
  
 
-! Dark dust: r < 1mu prolate; r > 1mu spherical
-    DO l = 1, lrd  ! Anzahl von dark dust grain radii
+! Dark dust: r < 1 mu prolate; r > 1 mu spherical
+    DO l = 1, lrd  ! Number of dark dust grain radii
         READ(7,*) weld(k), adark(l), OMEGA, qoad(l,k), qopd(l,k), qocpd(l,k), qosd(l,k)
         qoad(l,k) = qoad(l,k) - qosd(l,k)  ! In d.q ist extinction gespeichert
      
@@ -663,10 +553,8 @@ DO k = 1, nfo
     END IF
      
 END DO
-! c
-! c Set polarisation efficiencies q = abs(q)
-! c
 
+! Set polarisation efficiencies q = abs(q)
 qopc  = ABS(qopc)
 qopsi = ABS(qopsi)
 qopd  = ABS(qopd)
@@ -675,21 +563,20 @@ qocpc  = ABS(qocpc)
 qocpsi = ABS(qocpsi)
 qocpd  = ABS(qocpd)
      
-! c Test:
-! c         CALL locat(weld, nfo, 0.55d-4, kvisd)
-! c         WRITE(6, '(A20, F12.3, A30)') '    weld(kvisd) (mu) = ', weld(kvisd)*1e4, ' in d.Qmie_dark'
+! Test:
+!         CALL locat(weld, nfo, 0.55d-4, kvisd)
+!         WRITE(6, '(A20, F12.3, A30)') '    weld(kvisd) (mu) = ', weld(kvisd)*1e4, ' in d.Qmie_dark'
 
 CLOSE(3)
 CLOSE(4)
 CLOSE(7)
      
-! c
-! c ------------------------------------------------------
-! c Wavelength grid of dust model use file: ./Input/w12_vv2_Ralf_283wave.dat
-! c Until here old wavelengths as in d.q files and now interpolate to
-! c wavelength (cm) grid of dust model
-! c
 
+! -------------------------------------------
+! Wavelength grid of dust model use file: ./Input/w12_vv2_Ralf_283wave.dat
+! Until here old wavelengths as in d.q files and now interpolate to
+! wavelength (cm) grid of dust model
+! -------------------------------------------
 MM      = NF
 MM1     = MM - 1
 IF (MM .NE. 283) STOP ' mm ne 283'
@@ -719,14 +606,14 @@ DO K = 1, MM
     
     FAK = (WEL(K) - WELO(J)) / (WELO(J+1) - WELO(J))
         
-    DO L = 1, LRSI ! Anzahl MRN Si grain radii: LRSI = 84
+    DO L = 1, LRSI ! Number of MRN Si grain radii: LRSI = 84
         QASI(L,K)  = QOASI(L,J)  + (QOASI(L,J+1)  -  QOASI(L,J)) * FAK
         QPSI(L,K)  = QOPSI(L,J)  + (QOPSI(L,J+1)  -  QOPSI(L,J)) * FAK
         QCPSI(L,K) = QOCPSI(L,J) + (QOCPSI(L,J+1) - QOCPSI(L,J)) * FAK
         QSSI(L,K)  = QOSSI(L,J)  + (QOSSI(L,J+1)  -  QOSSI(L,J)) * FAK
     ENDDO
     
-    DO L = 1, LR ! Anzahl MRN aC grain radii: LR = 100
+    DO L = 1, LR ! Number of MRN aC grain radii: LR = 100
         QAC(L,K)  = QOAC(L,J)  + (QOAC(L,J+1)  -  QOAC(L,J)) * FAK
         QPC(L,K)  = QOPC(L,J)  + (QOPC(L,J+1)  -  QOPC(L,J)) * FAK
         QCPC(L,K) = QOCPC(L,J) + (QOCPC(L,J+1) - QOCPC(L,J)) * FAK
@@ -734,8 +621,7 @@ DO K = 1, MM
     ENDDO
 ENDDO
 
-! c
-! c 
+
 DO K = 1, NFO
     DO L = 1, LRSI
         IF (IBUG .GT. 2 .AND. WEL(K) .LE. 1.06D-5 .AND. WEL(K) .GE. 1.04D-5 .AND. &
@@ -747,9 +633,7 @@ DO K = 1, NFO
 ENDDO
 
 
-! c
-! c     Interpolate to wavelength grid for Dark dust
-! c
+! Interpolate to wavelength grid for Dark dust
 IF ((ABS(WELD(1)/WEL(1) - 1.0) .GE. 1.E-3) .OR. (ABS(WELD(NF)/WEL(NF) - 1.0) .GE. 1.E-3)) THEN
     PRINT*, '  WEL(1), WELD(1), WEL(NF), WELD(NF)', WEL(1), WELD(1), WEL(NF), WELD(NF)
     STOP 'Check wavelength grids:'
@@ -767,7 +651,7 @@ DO K = 1, MM
     IF (J .GE. NFO) J = NFO - 1
     IF (J .LE. 1) J = 1
 
-    ! c     check WELD(J) after LOCAT:
+    ! check WELD(J) after LOCAT:
     IF (WEL(K) .GE. WELD(J) * (1.0 + 1.D-7)) THEN
         PRINT*, ' K, J, WELD(J), WEL(K), WELD(J+1)'
         STOP 'Check wavelength grid: 1 term WELD(J+1) < WEL(K) <= WELD(J)'
@@ -783,10 +667,10 @@ DO K = 1, MM
         WRITE(6, '(A28, 2I5, 1P3E9.2)') ' WELD(J) <= WEL(K) < WELD(J+1)', K, J, WELD(J), WEL(K), WELD(J+1)
     ENDIF
     
-        ! c     Ready to interpolate Dark dust q's:        
+        ! Ready to interpolate Dark dust q's:        
     FAK = (WEL(K) - WELD(J)) / (WELD(J+1) - WELD(J))
     
-    DO L = 1, LRD  ! Anzahl dark dust grain radii
+    DO L = 1, LRD  ! Number of dark dust grain radii
         QAD(L, K) = QOAD(L, J) + (QOAD(L, J+1) - QOAD(L, J)) * FAK
         QSD(L, K) = QOSD(L, J) + (QOSD(L, J+1) - QOSD(L, J)) * FAK
         QPD(L, K) = QOPD(L, J) + (QOPD(L, J+1) - QOPD(L, J)) * FAK
@@ -796,7 +680,7 @@ DO K = 1, MM
 ENDDO
 
 
-! c    For testing:
+! For testing:
 IF (IBUG .GT. 2) THEN
     PRINT*, ARAD_POLMIN_AC, ARAD_POLMIN_SI, ARAD_POLMAX, ADARK(80), WELD(KVISD)
     
@@ -815,13 +699,11 @@ IF (IBUG .GT. 2) THEN
 END IF  ! end testing
 
 
-
-! c     
-! c   ---------------------------------------------------------------------------
-! c          
-! c   Nano grains: Graphite + silicates - Wavelengths, Absorption and Scattering efficiencies from file d.Qmie_*
-! c      print*, ' vsg:  Graphite'
-
+    
+! -------------------------------------------
+!   Nano grains: Graphite + silicates - wavelengths, absorption and scattering efficiencies from file d.Qmie_*
+!      print*, ' vsg:  Graphite'
+! -------------------------------------------
 OPEN(unit=3, FILE='./Input/d.Qmie_vGr', FORM='formatted')
 READ(3, '(A80)') CDUMD
 WRITE(6, '(A80)') CDUMD
@@ -837,8 +719,7 @@ CALL LOCAT(WELV, NFO, 0.55D-4, KVISV)
 
 CLOSE(3)
 
-
-! c      print*, ' vsg: Silicates'
+! print*, ' vsg: Silicates'
 OPEN(unit=3, FILE='./Input/d.Qmie_vSi', FORM='formatted')
     READ(3, '(A80)') CDUMD
     WRITE(6, '(A80)') CDUMD
@@ -862,19 +743,19 @@ OPEN(unit=3, FILE='./Input/d.Qmie_vSi', FORM='formatted')
 
 CLOSE(3)
 
-! c test wavelength grid same for MRN and VSG:
+! test if wavelength grid is the same for MRN and VSG:
 DO K = 1, NFO
     IF (ABS((WELV(K) - WELO(K)) / WELO(K)) .GE. 0.001) THEN
         PRINT*, K, WELO(K), WELV(K), ABS((WELV(K) - WELO(K)) / WELO(K))
         STOP ' WRONG VSG WAVELENGTHS'
     ENDIF
 ENDDO
+! test: ok
 
-! c test: ok
-! c       WRITE(6, '(A18, F6.3, A30)') '  WELV(KVISV) (MU) = ', WELD(KVISV)*1E4, ' IN D.QMIE_VGR'
+! WRITE(6, '(A18, F6.3, A30)') '  WELV(KVISV) (MU) = ', WELD(KVISV)*1E4, ' IN D.QMIE_VGR'
       
-! c -------------------------------------------
-! c Interpolate to new wavelength grid
+
+! Interpolate to new wavelength grid
 DO K = 1, MM
     CALL LOCAT(WELV, NFO, WEL(K), J)
     IF (J .LT. 1) THEN
@@ -892,7 +773,7 @@ DO K = 1, MM
     
     FAK = (WEL(K) - WELV(J)) / (WELV(J+1) - WELV(J))
     
-    DO L = 1, LRV ! Anzahl der VSG radii
+    DO L = 1, LRV ! Number of VSG radii
         QAGR(L, K) = QOAGR(L, J) + (QOAGR(L, J+1) - QOAGR(L, J)) * FAK
         QSGR(L, K) = QOSGR(L, J) + (QOSGR(L, J+1) - QOSGR(L, J)) * FAK
         QAVSI(L, K) = QOAVSI(L, J) + (QOAVSI(L, J+1) - QOAVSI(L, J)) * FAK
@@ -900,16 +781,12 @@ DO K = 1, MM
     ENDDO
 ENDDO
 
-! c      WRITE(65, '(1P2E10.2)') (WEL(K), QAGR(1, K), K=1, MM)
-! c      WRITE(66, '(1P2E10.2)') (WEL(K), QAGR(1, K), K=1, MM)
-! c      PRINT*, 'Interpol VSG done'
-! c      STOP
-! c
 
-! c X-rays : For nano-grains reduction of grain absorption efficiencies
-! c as calculated by Mie, similar to Fig.5 of Smith and Dwek (97). Grain of
-! c radius ARAD and photon energy E > E_MIE (keV) => QABS reduced ~ 1/FR.
-
+! -------------------------------------------
+! X-rays : For nano-grains reduction of grain absorption efficiencies
+! as calculated by Mie, similar to Fig.5 of Smith and Dwek (97). Grain of
+! radius ARAD and photon energy E > E_MIE (keV) => QABS reduced ~ 1/FR.
+! -------------------------------------------
 
 IF (WEL(MM) .LE. 100D-8) THEN
     PRINT*, '*** Reduction of abs efficiencies ~1/nu for wel < 136AA'
@@ -948,7 +825,6 @@ DO L = 1, LRV
     END DO
 END DO
 
-! c
 ! Check wavelength settings for KJIVBU bands
 CALL LOCAT(WEL, MM, 2.159D-4, K2P3)
 CALL LOCAT(WEL, MM, 1.662D-4, K1P65)
@@ -988,12 +864,13 @@ DO 10 K = 1, MM
 DFR(1) = 0.5D0 * (FR(2) - FR(1))
 DFR(MM) = 0.5D0 * (FR(MM) - FR(MM-1))
 
-! c      
-! c     print*, ' Interpolation of Qs for MRN, VSG, Ellipsoids, Dark dust done'
-! c     Optics of dust done - Q's are stored 
+
+! -------------------------------------------
+! Interpolation of Qs for MRN, VSG, Ellipsoids, Dark dust done'
+! Optics of dust done - Q's are stored 
 ! =======================================================================
 ! Check grain radii request in input and available in d.q files
-
+! -------------------------------------------
 CALL LOCAT(AMRN, LR, ALAC, LAC)
 CALL LOCAT(AMRN, LR, ALEC, LEC)
 CALL LOCAT(AMRN, LRSI, ALASI, LASI)
@@ -1013,9 +890,9 @@ IF (FAK1 .LT. FAK .AND. LESI .LT. LR - 1) THEN
     LESI = LESI + 1
 END IF
 
-! c test OK
-! c     write(6,'(a40, i5, 1p2e10.2)') ' Radii aC   asked: ALAC, ALEC LEC=', LEC, ALAC, ALEC
-! c     write(6,'(a40, i5, 1p2e10.2)') ' Radii Si   asked: ALASI, LESI=', LESI, ALASI, ALESI   
+
+! write(6,'(a40, i5, 1p2e10.2)') ' Radii aC   asked: ALAC, ALEC LEC=', LEC, ALAC, ALEC
+! write(6,'(a40, i5, 1p2e10.2)') ' Radii Si   asked: ALASI, LESI=', LESI, ALASI, ALESI   
 
 
 ! Radii assignments for MRN and VSG grains
@@ -1024,7 +901,7 @@ ALEC = AMRN(LEC)
 ALASI = AMRN(LASI)
 ALESI = AMRN(LESI)
 
-! Write the radii for Carbon and Silicon grains
+! Write the radii for carbon and silicate grains
 WRITE(6, '(A20, 1P2E10.2, 2I5)') ' Radii aC  :  ', AMRN(LAC), AMRN(LEC), LAC, LEC
 WRITE(6, '(A20, 1P2E10.2, 2I5)') ' Radii Si  :  ', AMRN(LASI), AMRN(LESI), LASI, LESI
 
@@ -1053,24 +930,20 @@ IF (LED .GE. LRD) PRINT*, ' *** WARNING: check max grain size in d.q* for Dark D
 ! Two dust types:
 ! a) Large + nano grains in the ISM with optical depth: tau_l and cross section sigt_l
 ! b) Dark dust as a separate component with optical depth: tau_d and cross section sigt_d
-
+! -------------------------------------------
 CALL SIGTDARK_EBVAVPOL
+! =================================================================================
 
-
-
-! c
-! c =================================================================================
-! c      
 IF (IGASABS .EQ. 0) GOTO 401
 FAK = 200.0D0 / SIGT(KVIS)
 
-WRITE(6,*) '   sigt in [cm^2/gramm Gas+Dust ISM]'
+WRITE(6,*) '   sigt in [cm^2/gram gas+dust ISM]'
 WRITE(6, '(A30, 1P1E9.3)') ' Norm. sigt(V)=200cm^2/g  = ', FAK
 SIGT = SIGT * FAK
 
 401  CONTINUE
 
-! c Writing output to file
+! Writing output to file
 OPEN(UNIT=8, FILE='./Output/Kappa.out', FORM='FORMATTED')
 REWIND 8
 WRITE(8,*) '# Optical depth (Siebenmorgen 2023, A&A 670A,115; SC 2023 doi: 10.48550/arXiv.2311.03310)'
@@ -1082,13 +955,15 @@ WRITE(8, '(1P1E9.3, 11E9.2, 1E10.3)') (WEL(K), &
    SIGA_PAHS(K) + SIGA_PAHB(K), SIGA_D(K), SIGS_D(K), SIGT(K), K=1,MM)
 CLOSE(8)
 
-! c
-! c ------------------------------
-! c Normalization:
-! c A(l) = 1.086 * tau 
-! c A(l) = 1.086 N_dust * Cext 
-! c P(l) = 1.086 N_dust * Cpol
-! c => P(l)/A(l) = Cpol(l)/Cext(l) = sigpol(l)/sigt(l)
+
+! -------------------------------------------
+! Normalization:
+! A(l) = 1.086 * tau 
+! A(l) = 1.086 N_dust * Cext 
+! P(l) = 1.086 N_dust * Cpol
+! => P(l)/A(l) = Cpol(l)/Cext(l) = sigpol(l)/sigt(l)
+! -------------------------------------------
+
 
 ! Open file for polarisation optical depth output
 OPEN(UNIT=18, FILE='./Output/PolKappa.out', FORM='FORMATTED')
@@ -1122,9 +997,10 @@ WRITE(16,'(1X, 1P4E11.3)') WEL(KBLUE) * 1E4, SIGT(KBLUE) / SIGT(KVIS), &
 WRITE(16,'(1X, 1P4E11.3)') WEL(KUV) * 1E4, SIGT(KUV) / SIGT(KVIS), &
         (SIGT(KUV) / SIGT(KVIS) - 1.0D0) * RV_MOD, 2.5 / LOG(10.0D0) * (SIGT(KUV) / SIGT(KVIS) - 1.0D0) * SIGT(KVIS)
 
-! c --------------------
-! c ' Optical+FUSE range: 1. > wel > 0.0909, x < 11.0 in tau4fit and Kapp4fit'
-! c ' Optical+IUE range: 1. > wel > 0.1148, x < 8.7 in tau4fit and Kapp4fit'
+! -------------------------------------------
+! ' Optical+FUSE range: 1. > wel > 0.0909, x < 11.0 in tau4fit and Kapp4fit'
+! ' Optical+IUE range: 1. > wel > 0.1148, x < 8.7 in tau4fit and Kapp4fit'
+! -------------------------------------------
 
 ! Loop over wavelengths (k = 1, mm)
     DO k = 1, mm  
@@ -1218,7 +1094,6 @@ PRINT*, '        '
 ! ----------------------------------------------------------------------------
 ! c Strahlungsfeld ISRF  oder vom Stern oder AGN
 ! ----------------------------------------------------------------------------
-
 ! The following block of code is for calculating the radiation field:
 ! Uncomment and modify if necessary to handle the dissociation table file.
 ! ----------------------------------------------------------------------------
@@ -1253,11 +1128,11 @@ DO II = 1, 1
 
 
 ! ----------------------------------------------------------------------------
-! c   Berechnung der Emission pro g IM [erg/s/Hz/ster] of  MRN + Dark dust grains
-! c ----------------------------------------------------------------------------
+!  Berechnung der Emission pro g IM [erg/s/Hz/ster] of  MRN + Dark dust grains
+! ----------------------------------------------------------------------------
 
     PRINT*, 'Type:  Radius    rho       en1csid   Mass      ah_csid   Temp'
-    ! c ***  MRN aC - Teilchen ***
+    ! *** MRN aC - particles ***
     WRITE(6,110)
     110  FORMAT(' ***  MRN aC - Teilchen   ***')
     
@@ -1302,10 +1177,10 @@ DO II = 1, 1
     END DO
 
 ! ----------------------------------------------------------------------------
-! c              ***  MRN Silikat - Teilchen   ***
+! c              ***  MRN silicate - particles   ***
 ! ----------------------------------------------------------------------------
     WRITE(6,111)
-    111 FORMAT(' ***  MRN Silikat - Teilchen   ***')
+    111 FORMAT(' ***  MRN silicate - particles   ***')
 
     ! Set initial temperature
     TNEW = 150.0
@@ -1314,7 +1189,7 @@ DO II = 1, 1
     DO L = LASI, LESI
         SUMJV = 0.0
 
-        ! Loop over the range for mm
+        ! Loop over the range of mm
         DO K = 1, MM
             QABS(K) = QASI(L, K)
 
@@ -1349,7 +1224,7 @@ DO II = 1, 1
 
 
 ! ----------------------------------------------------------------------------
-! c              ***  Dark Dust   ***
+!               ***  Dark Dust   ***
 ! ----------------------------------------------------------------------------
     WRITE(6,112)
     112 FORMAT(' ***  Dark Dust   ***')
@@ -1396,8 +1271,8 @@ DO II = 1, 1
 
 
 ! ----------------------------------------------------------------------------
-! c            Emission of  Very Small Graphites (VSG)
-! c   VSGs consist only of Carbon, hence material = 0
+!             Emission of  Very Small Graphites (VSG)
+!    VSGs consist only of Carbon, hence material = 0
 ! ----------------------------------------------------------------------------
 
 ! Check if processing should continue based on ispecvsg and abucvgr
@@ -1435,7 +1310,7 @@ DO II = 1, 1
     
 
 ! ----------------------------------------------------------------------------
-! c   Prüfe, ob Fluktuations-Rechnung überhaupt nötig
+!   Prüfe, ob Fluktuations-Rechnung überhaupt nötig
 ! ----------------------------------------------------------------------------
 
 ! Calculate the fluctuation timescales and conditions for emission
@@ -1470,9 +1345,9 @@ DO II = 1, 1
             CALL VSG
         END IF
 
-    ! ----------------------------------------------------------------------------
-    ! c   Emission pro g MRN-Staub [erg/s/Hz/ster].  Extinktion der vsg.
-    ! c   ievapvsg = 1:  Verdampfung.
+    ! -------------------------------------------
+    !    Emission pro g MRN-Staub [erg/s/Hz/ster].  Extinction der vsg.
+    !    ievapvsg = 1:  Verdampfung.
     ! ----------------------------------------------------------------------------
 
         IF (IEVAPVSG .EQ. 1) THEN
@@ -1509,10 +1384,10 @@ DO II = 1, 1
         END IF
     END DO
 
-! c end loop over all vsg radii
+! end loop over all vsg radii
 ! ----------------------------------------------------------------------------
-! c   Emission of  Very Small Silicates
-! c   vsg bestehen nur aus Si-grains, daher material = 1
+!   Emission of  Very Small Silicates
+!   vsg bestehen nur aus Si-grains, daher material = 1
 ! ----------------------------------------------------------------------------
 
 501 CONTINUE
@@ -1522,7 +1397,7 @@ IF (ABUVSI .EQ. 0) THEN
 END IF
     
 ! ----------------------------------------------------------------------------
-! c              ***  VSG silicates  ***
+!               ***  VSG silicates  ***
 ! ----------------------------------------------------------------------------
 WRITE(6, 114)
 114 FORMAT(' ***  VSG silicates  ***')
@@ -1547,7 +1422,7 @@ DO 101 L = LAV, LEV
 
 
 ! ----------------------------------------------------------------------------
-! c   Prüfe, ob Fluktuations-Rechnung überhaupt nötig
+!   Prüfe, ob Fluktuations-Rechnung überhaupt nötig
 ! ----------------------------------------------------------------------------
 
     ZEITPHOT  = 1D0 / (PI4 * PI * ARAD**2 * SUM)
@@ -1573,8 +1448,8 @@ DO 101 L = LAV, LEV
     END IF
     
     ! ----------------------------------------------------------------------------
-    ! c   Emission pro g MRN-Staub [erg/s/Hz/ster]. Extinktion der vsg.
-    ! c   IEVAPVSG = 1: Verdampfung.
+    !   Emission pro g MRN-Staub [erg/s/Hz/ster]. Extinktion der vsg.
+    !   IEVAPVSG = 1: Verdampfung.
     ! ----------------------------------------------------------------------------
     
     IF (IEVAPVSG .EQ. 1) THEN
@@ -1601,7 +1476,7 @@ DO 101 L = LAV, LEV
     END IF
     
 101 CONTINUE
-! c End loop over all VSG radii
+! End loop over all VSG radii
 
 
 
@@ -1611,9 +1486,9 @@ DO 101 L = LAV, LEV
 502 CONTINUE
 
 ! ----------------------------------------------------------------------------
-! c      Emission of P A Hs         (PAHs bestehen aus C ==> material = 0)
+!      Emission of P A Hs         (PAHs bestehen aus C ==> material = 0)
 ! ----------------------------------------------------------------------------
-! c Hier:   xatom = No of C + H atoms
+! Hier:   xatom = No of C + H atoms
 ! ----------------------------------------------------------------------------
     
 IF (ISPECPAH .EQ. 0) GO TO 503
@@ -1633,7 +1508,7 @@ XATOM = ZCPAH + ZHPah
 ABUCPAH = ABUCPAHS
 ARAD = SQRT(ZCPAH / 1.2) * 1D-8
     
-! Loop through wavelengths (mm) and assign absorption values
+! Loop over wavelengths (mm) and assign absorption values
 DO K = 1, MM
     QABS(K) = QABSPAHS(K)
 END DO
@@ -1648,8 +1523,8 @@ IF (IBUG .GE. 3) THEN
 END IF
     
 ! ----------------------------------------------------------------------------
-! c   Umrechnung auf Emission pro g IM [erg/s/Hz/ster]. 
-! c   FAK = Zahl der PAHs pro g IM
+!   Umrechnung auf Emission pro g IM [erg/s/Hz/ster]. 
+!   FAK = Zahl der PAHs pro g IM
 ! ----------------------------------------------------------------------------
 
 pahmass = abucpah * wmolc  / (abuc_tot*wmolc + abusi *wmolsi  + &
@@ -1661,9 +1536,9 @@ pahmass = abucpah * wmolc  / (abuc_tot*wmolc + abusi *wmolsi  + &
 77  continue
 
 ! ----------------------------------------------------------------------------
-! c   Emission of Big PAHs
-! c   ========================
-! c   Big PAHs are treated similarly to small PAHs but with different parameters.
+!   Emission of Big PAHs
+!   ========================
+!   Big PAHs are treated similarly to small PAHs but with different parameters.
 ! ----------------------------------------------------------------------------
 
 ! Update zcpah for big PAHs
@@ -1694,7 +1569,7 @@ ABUCPAH = ABUCPAHSB
 ! Calculate radius of the big PAH
 ARAD = SQRT(ZCPAH / 1.2) * 1D-8
 
-! Loop through wavelengths and assign absorption values for big PAHs
+! Loop over wavelengths and assign absorption values for big PAHs
 DO K = 1, MM
     QABS(K) = QABSPAHB(K)
 END DO
@@ -1709,8 +1584,8 @@ IF (IBUG .GE. 3) THEN
 END IF
 
 ! ----------------------------------------------------------------------------
-! c   Convert emission to per gram IM [erg/s/Hz/ster] for Big PAHs
-! c   FAK = Number of Big PAHs per gram of interstellar medium (IM)
+!   Convert emission to per gram IM [erg/s/Hz/ster] for Big PAHs
+!   FAK = Number of Big PAHs per gram of interstellar medium (IM)
 ! ----------------------------------------------------------------------------
 
 ! Calculate the mass of PAHs
@@ -1728,12 +1603,12 @@ END DO
 503 CONTINUE
 
 ! ----------------------------------------------------------------------------
-! c   Store total absorption in tabspah for future reference
+!   Store total absorption in tabspah for future reference
 ! ----------------------------------------------------------------------------
 TABSPAH = TOTABS
 
 ! ----------------------------------------------------------------------------
-! c   Compute mean photon energy
+!    Compute mean photon energy
 ! ----------------------------------------------------------------------------
 ! Uncomment the following block if you want to compute and print the mean photon energy
 
@@ -1751,7 +1626,7 @@ TABSPAH = TOTABS
 
 
 ! ----------------------------------------------------------------------------
-! c    Total Dust Emission [erg/s/Hz/ster] per g IM
+!    Total Dust Emission [erg/s/Hz/ster] per g IM
 ! ----------------------------------------------------------------------------
 
 ! Calculate maximum emission from MRN
@@ -1797,7 +1672,7 @@ DO K = 1, MM
 END DO
 
 ! ----------------------------------------------------------------------------
-! c   Polarisation in the optical and polarized intensity at 850mu
+!   Polarisation in the optical and polarized intensity at 850mu
 ! ----------------------------------------------------------------------------
 
 WRITE(6,*) '# ----------- Polarisation p and polarisation efficiency p/tauV '
@@ -1842,8 +1717,5 @@ PRINT *, ' +++               jsmD2              DONE                     +++++++
 PRINT *, '        '
 
 
-! c
-! c     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
-! c
 END DO
 END PROGRAM jsm2Dpol
