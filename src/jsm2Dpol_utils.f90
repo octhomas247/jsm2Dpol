@@ -138,6 +138,7 @@ MODULE JSM_UTILS
     
     END SUBROUTINE INITIALIZE_DUST_PARAMETERS
 
+    
     SUBROUTINE CHECK_QFILE_EXISTENCE(FILES_EXIST)
         IMPLICIT NONE
         LOGICAL, INTENT(OUT) :: FILES_EXIST
@@ -161,6 +162,7 @@ MODULE JSM_UTILS
             FILES_EXIST = .TRUE.
         END IF
     END SUBROUTINE CHECK_QFILE_EXISTENCE
+
 
     SUBROUTINE VERIFY_AB_DEL0(AB, DEL0)
         IMPLICIT NONE
@@ -321,11 +323,10 @@ MODULE JSM_UTILS
         END IF
     END SUBROUTINE SET_DARK_DUST_VOLUMES
 
+
     SUBROUTINE COPY_QFILES(VVAC, POR, DEL0, AB, QFILES_PATH, D_TAG)
         IMPLICIT NONE
         REAL(KIND=8), INTENT(IN) :: VVAC, POR, DEL0, AB
-        ! LOGICAL, INTENT(IN)      :: MODELFOLDER
-
         CHARACTER(LEN=512) :: SRCDIR, DESTDIR, THISDIR
         CHARACTER(LEN=128) :: SRCNAME(3), DESTNAME(3)
         CHARACTER(LEN=512) :: SRCPATH, DESTPATH
@@ -336,6 +337,7 @@ MODULE JSM_UTILS
         CHARACTER(*), INTENT(IN) :: QFILES_PATH
         LOGICAL :: STATUS
         CHARACTER(LEN=16) :: TAG_USED
+
         CALL GETCWD(THISDIR)
         
         WRITE(VSTR, '(I2.2)') INT(VVAC * 100.0D0)
@@ -348,13 +350,8 @@ MODULE JSM_UTILS
             DVAL = INT(DEL0)
             WRITE(DSTR, '(I2.2)') DVAL
             TAG_USED = 'd' // TRIM(DSTR)
-            ! WRITE(DSTR, '(I2.2)') INT(DEL0)
-            ! TAG_USED = 'd' // TRIM(DSTR)
         ENDIF
         
-        ! PRINT *, 'DEL0', DEL0
-        ! PRINT *, 'D_TAG', D_TAG
-        ! PRINT *, 'TAG_USED', TAG_USED
         SRCNAME(1) = 'd.Dk' // TRIM(VSTR) // 'ab' // TRIM(ABSTR) // TAG_USED
         SRCNAME(2) = 'd.Si' // TRIM(PSTR)  // 'ab' // TRIM(ABSTR) // TAG_USED
         SRCNAME(3) = 'd.aC' // TRIM(PSTR)  // 'ab' // TRIM(ABSTR) // TAG_USED
@@ -364,12 +361,6 @@ MODULE JSM_UTILS
         DESTNAME(3) = 'd.QellipaC'
 
         SRCDIR = TRIM(THISDIR) // TRIM(QFILES_PATH)
-        ! IF (MODELFOLDER) THEN
-            ! SRCDIR = TRIM(THISDIR) // '/../Qfile_tv'
-        ! ELSE
-            ! SRCDIR = TRIM(THISDIR) // '/../../Qfile_tv'
-        ! END IF
-
         DESTDIR = TRIM(THISDIR) // '/Input'
 
         ! Create destination folder if it doesn't exist
@@ -440,7 +431,6 @@ MODULE JSM_UTILS
         END IF
         POR = TMP / 100.0D0
 
-
         CALL EXTRACT_D_TAG(LAST, D_TAG, STATUS_TAG)
         ! PRINT *, D_TAG
         ! Extract DEL0
@@ -467,8 +457,6 @@ MODULE JSM_UTILS
             D_TAG = TRIM(LAST(POSD:POSAB-1))
             PRINT *, D_TAG
         END IF
-
-
 
         ! Extract AB_STR based on "ab"
         POSAB = INDEX(LAST, 'ab')
@@ -660,58 +648,37 @@ MODULE JSM_UTILS
     END SUBROUTINE REMOVE_CHARS
 
 
-    SUBROUTINE EXTRACT_POR_FROM_PATH(por)
-        IMPLICIT NONE
-        REAL(8), INTENT(OUT) :: por
-        CHARACTER(LEN=256) :: path
-        CHARACTER(LEN=2) :: subdir
-        INTEGER :: i, len_path, start_idx
-        INTEGER :: ios
+    ! SUBROUTINE EXTRACT_POR_FROM_PATH(por)
+    !     IMPLICIT NONE
+    !     REAL(8), INTENT(OUT) :: por
+    !     CHARACTER(LEN=256) :: path
+    !     CHARACTER(LEN=2) :: subdir
+    !     INTEGER :: i, len_path, start_idx
+    !     INTEGER :: ios
     
-        CALL GETCWD(path)  ! Get current working directory
+    !     CALL GETCWD(path)  ! Get current working directory
     
-        ! Find the position of the last '/'
-        len_path = LEN_TRIM(path)
-        DO i = len_path, 1, -1
-        IF (path(i:i) == '/') EXIT
-        END DO
+    !     ! Find the position of the last '/'
+    !     len_path = LEN_TRIM(path)
+    !     DO i = len_path, 1, -1
+    !     IF (path(i:i) == '/') EXIT
+    !     END DO
     
-        start_idx = i + 2  ! Second and third characters of final directory
+    !     start_idx = i + 2  ! Second and third characters of final directory
     
-        IF (start_idx <= len_path - 1) THEN
-        subdir = path(start_idx:start_idx+1)
-        READ(subdir, *, IOSTAT=ios) por
-        IF (ios == 0) THEN
-            por = por * 0.01
-        ELSE
-            por = 0.0D0
-            PRINT *, 'Warning: Failed to read number from path segment.'
-        END IF
-        ELSE
-        por = 0.0D0
-        PRINT *, 'Warning: Path too short or in unexpected format.'
-        END IF
-    END SUBROUTINE EXTRACT_POR_FROM_PATH
-
-
-
-
-    ! c
-    ! c --------------------------------------------------------
-    ! c
-
-
-
-
-
-
-    ! c
-    ! c --------------------
-    ! c
-
-    ! c  *********************************************************************
-
-    ! c  *********************************************************************
-    
+    !     IF (start_idx <= len_path - 1) THEN
+    !     subdir = path(start_idx:start_idx+1)
+    !     READ(subdir, *, IOSTAT=ios) por
+    !     IF (ios == 0) THEN
+    !         por = por * 0.01
+    !     ELSE
+    !         por = 0.0D0
+    !         PRINT *, 'Warning: Failed to read number from path segment.'
+    !     END IF
+    !     ELSE
+    !     por = 0.0D0
+    !     PRINT *, 'Warning: Path too short or in unexpected format.'
+    !     END IF
+    ! END SUBROUTINE EXTRACT_POR_FROM_PATH
 
 END MODULE JSM_UTILS

@@ -67,11 +67,26 @@ PROGRAM jsm2Dpol
 !       Greetings, Ralf Siebenmorgen
 !      ------------------------------------------------------------------
 
-USE config
 USE constants
+
+! USE test
+USE tempmrn_mod
+USE effi_mod
+USE vsg_mod
+USE vec_lr_mod
+USE vec_nf_mod
+USE vec_sig_mod
+USE fest_mod
+USE paheva_mod
+USE paraDark_mod
+USE abu_mod
+USE rdark_mod
+
+USE const_mod
 USE functions
-USE SUBROUTINES
+!   USE jsm2Dpolcom
 USE JSM_UTILS
+USE SUBROUTINES
 
 IMPLICIT NONE
 INTEGER, PARAMETER :: nfo = 283
