@@ -1,97 +1,89 @@
-# JSM2DPOL
+# JISMO: Joint Interstellar Sightline Model
 
-Computes dust cross-sections, extinction, and polarised emission based on the three-component model by  
-[Siebenmorgen R. (2023, A&A, 670A, 115)](https://arxiv.org/abs/2211.10146). Relative masses are derived from dust abundances and size distributions.  
-The subroutine `sigtDark_EbvAvPol` computes the cross-sections ($cm^2/g$ ISM dust) and the relative mass of submicron-sized grains.
+## Overview
 
----
+JISMO is a Fortran90 program for modeling polarized dust extinction, scattering and thermal emission in the interstellar medium (ISM). It is based on the three-component dust grain model from [Siebenmorgen R. (2023, A&A, 670A, 115)](https://arxiv.org/abs/2211.10146). It includes support for:
 
-## 🌌 Dust Model
+- Multiple grain types (nano, amorphous, and large submicron grains)
+- Polarization-dependent optical cross-sections
+- Alignment efficiency modeling
+- Comparison with observed extinction and polarization
 
-- **Cross-sections**: Based on [Siebenmorgen R. (2023, A&A, 670A, 115)](https://arxiv.org/abs/2211.10146)  
-- **Column density**: Based on Eq. (2) and Eq. (3) from [Siebenmorgen & Chini (2023)](https://arxiv.org/abs/2311.03310)
+## Scientific Context – LIPS III
 
----
+This repository accompanies the modeling work presented in:
 
-## 🪶 Dust Components
+**LIPS III: The Large Interstellar Polarisation Survey – Observational constraints on grain structures and alignment efficiencies**  
+Siebenmorgen et al. (2025), *A&A, XXX, XXX*
 
-1. **Nano-particles (VSG)**  
-   - Graphite + PAHs (2175 Å bump, far-UV reddening)  
-   - Nano-silicates (far-UV)
+The LIPS III study aims to constrain the physical properties of interstellar dust — including grain size, structure, composition, and alignment — by jointly analyzing:
 
-2. **Large grains**  
-   - Prolate ($a/b > 1$), aligned (IDG model) or PDG (set via d.Q files)
-   - Optical constants:  
-     - aSi: [Demyk et al. (2022)](https://arxiv.org/abs/2209.06513)  
-     - aC: [Zubko (1996)](https://ui.adsabs.harvard.edu/abs/1996MNRAS.282.1321Z/abstract)  
-   - Radii: 6–260 nm ([Mathis et al., 1977](https://ui.adsabs.harvard.edu/abs/1977ApJ...217..425M/abstract))
+- Reddening curves
+- Optical linear polarization spectra from VLT/FORS
+- Planck 850 μm polarized dust emission (for a subset of stars)
+- Gaia distance measurements
 
-3. **Submicron-sized grains (Dark Dust)**  
-   - Fluffy spheres: 20% aC, 30% Si, 50% vacuum  
-   - Radii: 260 nm – 3 µm
+A three-component grain model is fitted to individual sightlines using a multi-step approach. For three representative stars, the model is constrained with both optical and submillimeter polarization. For 24 additional sightlines, the model is applied using only optical data. This repository includes the code (JISMO) and the data used in those applications.
 
----
+## Repository Structure
 
-## 📥 Input Files (in `./Input/`)
+The repository is organized into three main components:
 
-- `d.Q*` files: Efficiency Q data for grain types computed using the Bruggeman mixing rule for porosity treated as vaccuum inclusion, e.g.: 
-  - `d.QellipaC`  
-  - `d.QellipSi`  
-  - `d.QellipDark`
-  - `d.Qmie_vGr`
-  - `d.Qmie_vSi`
+1. **Standalone JISMO Program** (`src/`): Contains the main JISMO Fortran90 source code. Can be used independently of the LIPS III study.
+2. **With Rsv constraints** (`models/por*/` folders): Fits reddening + FORS + Planck data for 3 stars using Eq. 18 (iteratively matching Rsv and Rpp).
+3. **Without Rsv** (`models/Model24stars/`): Applies the dust model to 24 additional sightlines using only reddening and FORS polarization (no Rsv), using a Dark Dust model with:
 
-- `jsmTaufit.inp`:  
-  Contains `tauV`, `Ebv_obs`, and `P_serk` (Serkowski polarisation fit)
+    - Porosity = 10%
+    - Vacuum content = same as aC + aSi
+    - δ₀ = 10 μm
+    - Axis ratio a/b = 2.5
 
-- `w12_vv2_Ralf_283wave.dat`:  
-  Wavelength grid
-
-- `jsm12fit.inp`:  
-  Dust parameters for fitting reddening:
-  - Abundances: `abuc`, `abusi`, `abuvsi`, `abucvgr`, `abucpahs`
-  - Sizes: `qmrn`, `alec`, `alesi`, `arad_polmin_aC`, `arad_polmin_Si`, `arad_polmax`, `aled`
-
-- `PAH2170.wq`:
 
 ---
 
-## 📤 Output Files (in `./Output/`)
-
-- `Kappa.out`: Absorption (`sa_*`) and scattering (`ss_*`)  
-- `Kappa4fit.out`: Observational wavelength range  
-- `PolKappa.out`: Polarised cross-sections (`sigp_*`, dark dust set to zero)  
-- `tau4fit.out`: Extinction/reddening curves (absolute and normalized)
-- `emis.out`: 
-- `emipol.out`:
-
----
-
-## 📐 Cross-Section Notation
-
-All cross-sections ($K$) are in units of $cm^2/g$-dust, scaled to optical depth via `Nl`, `Nd`.
-
----
-
-## 📁 Project Structure
-
-    jsm2Dpol/
-    ├── src/
-    │   ├── jsm2Dpol_main.f90         # Main program
-    │   ├── jsm2Dpol_mods.f90         # Config/constants/functions modules
-    │   ├── jsm2Dpol_utils.f90        # General-purpose utilities
-    │   └── jsm2Dpol_subroutines.f90  # Physics subroutines and shared variables
-    ├── example/                      
-    │   ├── Input/                    # Sample set of inputs
-    │   ├── Output/               
-    │   └── af90.j               
-    ├── Makefile                      # Build script
+    jismo/
+    ├── src/                         # Standalone JISMO program
+    │   ├── jsm_main.f90
+    │   ├── jsm_mods.f90
+    │   ├── jsm_utils.f90
+    │   └── jsm_subroutines.f90
+    │    
+    ├── example/                    # Minimal technical example
+    │   ├── Input/                  # Pre-generated inputs
+    │   ├── Output/                 # Expected result
+    │   └── af90.j                  # JISMO Output binary
+    │    
+    ├── models/                     # Scientific models
+    │   ├── Model24stars/
+    │   │   ├── Run_all.pro         # Model-specific driver
+    │   │   └── ...
+    │   │
+    │   ├── por05DarkForsRsv/
+    │   │   ├── V00d00.2ab1.5/
+    │   │   │   ├── Run_all.pro
+    │   │   │   └── ...          
+    │   │   └── ...
+    │   ├── por10DarkForsRsv/
+    │   └── por20DarkForsRsv/
+    │    
+    ├── IDL_shared/                 # Shared IDL helper routines
+    │   ├── istart_all.pro
+    │   └── ...
+    │    
+    ├── Qfile/                      # Library of d.Q files
+    │   ├── d.aC00ab2.0d00          # d.QellipaC for por=0.0, ab=2.0, del0 = 0.02
+    │   └── ...
+    │
+    ├── scripts/                    # Python helpers, IDL-to-input wrappers
+    │   └── run_model.py            # Optional wrapper: runs IDL, then JISMO
+    │    
+    ├── Makefile                    
     ├── LICENSE
-    └── README.md   
+    └── README.md
 
 ---
 
-## ⚙️ Compilation
+## Getting Started
 
 Build the executable `af90.j`:
 
@@ -101,25 +93,117 @@ make
 make jsm
 ```
 
-Move the executable next to your `./Input/` and `./Output/` folders:
+### Individual Execution
+
+Move the executable from `build/` next to the `Input/` and `Output/` folders of your project and run (see `example/`):
 
 ```bash
 ./af90.j
 ```
 
+### Input Files (`./Input/`)
+
+These files are required to run a JISMO model for a given sightline:
+
+- d.Q* files — Dust efficiencies for different grain populations, computed using Mie theory or spheroidal models with the Bruggeman mixing rule (porosity as vacuum inclusion). Typical files include:
+  - d.QellipaC        – Elongated amorphous carbon grains
+  - d.QellipSi        – Elongated silicate grains
+  - d.QellipDark      – Elongated dark dust grains
+  - d.Qmie_vGr        – Spherical graphite grains
+  - d.Qmie_vSi        – Spherical silicate grains
+
+- jsmTaufit.inp — Observational constraints for the current sightline:
+  - tauV       – Optical depth at V band
+  - Ebv_obs    – Observed colour excess
+  - P_serk     – Serkowski fit to optical polarisation
+
+- w12_vv2_Ralf_283wave.dat — Wavelength grid used for computing cross-sections and comparing to observations.
+
+- jsm12fit.inp — Main configuration file for dust composition and size distribution:
+  - Abundances:
+      abuc, abusi, abuvsi, abucvgr, abucpahs
+  - Sizes and distribution:
+      qmrn, alec, alesi, arad_polmin_aC, arad_polmin_Si, arad_polmax, aled
+
+- PAH2170.wq — Cross-section data for PAH emission near 2170 Å (UV bump).
+
 ---
 
-## 🧾 Version History
-- **05/2025** — Refactored modules, added reading dust parameters from d.Q files 
-- **04/2025** — Translated from FORTRAN77 to FORTRAN90  
-- **26.11.2024** — Updated version  
-- **24.04.2023** — Unified SpT with GAIA parallax distances  
-- **20.09.2022** — Updated optical constants ([Demyk+22](https://arxiv.org/abs/2209.06513))  
-- **04.12.2021** — Introduced dark dust  
-- **1991** — Original release (Siebenmorgen PhD; [Siebenmorgen & Kruegel 1992, A&A](https://adsabs.harvard.edu/full/1992A%26A...259..614S))
+### Output Files (`./Output/`)
+
+The model produces the following output for each run:
+
+- Kappa.out — Total extinction, absorption (sa_\*) and scattering (ss_\*) cross-sections.
+
+- Kappa4fit.out — Same as above, but restricted to the observational wavelength grid.
+
+- PolKappa.out — Polarised absorption and scattering cross-sections (sigp_*).
+  (Note: for the dark dust component, polarisation is assumed to be zero.)
+
+- tau4fit.out — Modeled extinction/reddening curves (absolute and normalized).
+
+- emis.out — Dust emission spectrum from all components.
+
+- emipol.out — Polarised dust emission spectrum.
 
 ---
 
-## 👤 Credits
+## Running the Model
 
-Please contact [Ralf Siebenmorgen](mailto:Ralf.Siebenmorgen@eso.org) for any issues.  
+Each model run fits a **three-component dust grain model** to observations of an individual sightline. The fitting is controlled by the model-specific IDL driver (`Run_all.pro`), which:
+
+- Prepares input data and folders
+- Performs the model fitting (iterative only for the 3 representative stars)
+
+The actual computation of extinction, polarization, and emission is done by the Fortran program (`af90.j`), which is called separately by a Python wrapper.
+
+This process is automated with the `run_model.py` script:
+
+```bash
+./scripts/run_model.py models/Model24stars/
+```
+
+This script:
+
+- Runs the IDL fitting script (`Run_all.pro`)
+- Executes the Fortran binary (`af90.j`) from the `build/` directory
+
+There is no need to move `af90.j` into individual model folders.
+
+### Optional: View IDL Output
+
+To print IDL output to the terminal and save it to `idl_run.log` inside the model folder:
+
+```bash
+./scripts/run_model.py models/Model24stars/ --log-idl
+```
+
+### Notes
+
+- The specified model folder must include:
+  - A `Run_all.pro` IDL driver
+  - An `Input/` subfolder with required configuration and Q files
+- Output is written to `Output/` within the model directory.
+
+The workflow supports two modes:
+- **3 representative stars:** Fitting includes both **optical and submillimeter polarization** (Planck 850 µm), with **iterative adjustment** of the outer radius to match Rsv and Rpp (see Eq. 18).
+- **24 additional stars:** Fitting uses only **optical polarization and reddening**, with a **single-pass fit**.
+
+---
+
+## Version History
+
+- **2025-05** — Modularized codebase and enabled reading of dust parameters from d.Q\* input files  
+- **2025-04** — Ported from FORTRAN77 to structured FORTRAN90  
+- **2024-11-26** — Code update for LIPS III analysis  
+- **2023-04-24** — Stellar types unified with GAIA parallax distances  
+- **2022-09-20** — Adopted updated optical constants from [Demyk et al. (2022)](https://arxiv.org/abs/2209.06513)  
+- **2021-12-04** — Dark dust component introduced  
+- **1991** — Original JSM model developed ([Siebenmorgen & Kruegel 1992, A&A, 259, 614](https://adsabs.harvard.edu/full/1992A%26A...259..614S))
+
+## Contact and Acknowledgements
+
+For questions or support, please contact  
+📧 [Ralf Siebenmorgen](mailto:Ralf.Siebenmorgen@eso.org)  
+
+If you use this code in your research, please cite the relevant publications as listed in the [LIPS III abstract section](#lips-iii-context).  

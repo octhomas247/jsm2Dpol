@@ -1,17 +1,17 @@
-# JSMF90 Makefile with build directory
+# JISMO Makefile
 
 FC = gfortran
 FFLAGS = -O3 -ffree-line-length-none -ffree-form
-SRC = src/jsm2Dpol_utils.f90 \
-      src/jsm2Dpol_mods.f90 \
-      src/jsm2Dpol_subroutines.f90 \
-      src/jsm2Dpol_main.f90 
+SRC = src/jsm_utils.f90 \
+      src/jsm_mods.f90 \
+      src/jsm_subroutines.f90 \
+      src/jsm_main.f90 
 
 OBJ = $(SRC:src/%.f90=build/%.o)
 MODDIR = build
 BINDIR = build
 # BIN = $(BINDIR)/af90.j
-BIN = af90.j
+BIN = $(BINDIR)/af90.j
 
 all: $(BIN)
 
