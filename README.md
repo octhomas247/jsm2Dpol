@@ -1,5 +1,5 @@
 # JISMO: Joint Interstellar Sightline Model
-
+<!-- > A Fortran90 code for modeling polarised extinction and emission in the diffuse ISM using a three-component grain model. -->
 ## Overview
 
 JISMO is a Fortran90 program for modeling polarized dust extinction, scattering and thermal emission in the interstellar medium (ISM). It is based on the three-component dust grain model from [Siebenmorgen R. (2023, A&A, 670A, 115)](https://arxiv.org/abs/2211.10146). It includes support for:
@@ -8,6 +8,8 @@ JISMO is a Fortran90 program for modeling polarized dust extinction, scattering 
 - Polarization-dependent optical cross-sections
 - Alignment efficiency modeling
 - Comparison with observed extinction and polarization
+
+![](./header.jpeg?raw=true "JISMO Header")
 
 ## Scientific Context – LIPS III
 
