@@ -1,0 +1,92 @@
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+   --> crossec_dd              START                            ++++++++++
+  
+ ** Reading 8 input parameters from file jsm12fit.inp
+ ** Reading 2 input parameters from file jsmTaufit.inp
+               ** Rv(Av), tauV, ebv_obs=      2.99    1.02    0.37
+               ** abuc                 =       52.92
+               ** abusi                =       20.00
+               ** abuvsi               =       12.39
+               ** abucvgr              =       12.62
+               ** abucpah              =        6.93
+               ** fDark                =        0.50
+               ** qmrn                 =        2.98
+ Currently: vvac = 0.00, por = 0.00, del0 =  0.0, ab =  0.0
+ ✅ Q files already present. Reading parameters from them.
+ ✅ POR check passed:   0.0000000000000000     
+ ✅ VVAC check passed:   5.0000000000000003E-002
+ ✅ AB check passed:   1.5000000000000000     
+ ✅ DEL0 check passed:  0.20000000000000001     
+ Currently: vvac = 0.05, por = 0.00, del0 =  0.2, ab =  1.5
+   *** rhc, rhgr, rhsi, wmolsi        =   1.60E+00  2.24E+00  3.40E+00  1.34E+02
+  Relative volume in Dark dust  :
+       aC        Si        Eis       Vac       total
+       0.38      0.57      0.00      0.05      1.00
+     Density of porous Dark dust =    2.15
+     ***     open:   d.QellipSi
+     ***     open:   d.QellipaC
+     ***     open:   d.QellipDark
+ Reading kprol, ab, comp, idgSi, del0 from d.QellipSi
+           0   1.5000000000000000         Demyk             0  0.20000000000000001     
+ Currently: vvac = 0.05, por = 0.00, del0 =  0.2, ab =  1.5
+ k  a/b   comp   IDG  del0                                                      
+ 0  1.50 ACH2_zu  2  0.200                                                      
+ 0  1.50 L_Si57a  2  1.000                                                      
+# graphiteDraine2003 nw =          283 nr =            5                        
+# asil_D03 nw =          283 nr =            5                                  
+       Radii aC  :    6.00E-07  2.45E-05    1   77
+       Radii Si  :    6.00E-07  2.45E-05    1   77
+       Radii Dark :   2.45E-05  1.10E-04  1.11E-04   77  108
+     abusi    abuc_tot abucaC     abugr   abuvsi  abucpahs  abucpahb 
+     20.0     72.5     52.9     12.6     12.4      6.9      0.0
+  acmass,   Simass,   vgrmass,  vsimass,  pahmass,  tmassDark 
+  1.10E-01  3.47E-01  2.63E-02  2.90E-01  1.44E-02  2.12E-01
+       Mass of MRN, Dark, Mtot, fDark :    0.79   0.21   1.00   0.20
+          N_large+vsg,   N_dark       =    6.128E-05   1.487E-05
+          E(B-V), tauV_tot, tauV_dark =     0.37    1.02    0.05
+          Mass_mrn, Mass_dark, fdark  =    8.048E-01   1.952E-01   2.036E-01
+                                        
+  +++                crossec_dd              DONE                     ++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+         
+           1
+  3) Interstellares Strahlungsfeld (ISRF)
+    Integ. mean Intensitat (erg/cm2/s):  4.003E-02
+ Type:  Radius    rho       en1csid   Mass      ah_csid   Temp
+ ***  MRN aC - Teilchen   ***
+  aC :  2.45E-05  1.60E+00  4.22E+01  1.10E-01  1.05E+02  1.74E+01
+ ***  MRN silicate - particles   ***
+  Si:   2.45E-05  2.71E+00  7.87E+01  3.47E-01  1.96E+02  1.13E+01
+ ***  Dark Dust   ***
+ Dark:  2.45E-05  2.15E+00  1.58E+01  3.93E+01  1.45E+01
+ Dark:  1.11E-04  2.15E+00  1.58E+01  4.06E+01  1.21E+01
+ ***  VSG graphite  ***
+   4309894.5203556772        7.6293954467773958E-006   5.0000001000000001E-008
+ absEnergy= 1.10E-18 abs/emis=  9.91E-01 vGr a=   5.00E-08
+   668237.72787257540        3.1715842585502350E-004   9.3060997000000004E-008
+ absEnergy= 7.11E-18 abs/emis=  9.93E-01 vGr a=   9.31E-08
+   103522.21665356951        1.3185840493828644E-002   1.7321000000000000E-007
+ absEnergy= 4.60E-17 abs/emis=  9.90E-01 vGr a=   1.73E-07
+   15999.404353296801       0.54802170950931994        3.2236999999999999E-007
+ absEnergy= 2.99E-16 abs/emis=  9.64E-01 vGr a=   3.22E-07
+ ***  VSG silicates  ***
+ absEnergy= 3.96E-19 abs/emis=  9.95E-01 vSi a=   5.00E-08
+ absEnergy= 2.56E-18 abs/emis=  1.00E+00 vSi a=   9.31E-08
+ absEnergy= 1.66E-17 abs/emis=  9.91E-01 vSi a=   1.73E-07
+ absEnergy= 1.09E-16 abs/emis=  9.96E-01 vSi a=   3.22E-07
+ *** small PAH  ***
+     small PAH: ZCPAH, ZHPah =   30.0   12.0
+ PAH: Iter=  6 abs/emis = 9.86E-01 Energy_abs (eV) =2.40E-07 sumevap = 1.10E-20
+  
+      Peak total dust emission max(EMIS) =   5.814E-12
+ # ----------- Polarisation p and polarisation efficiency p/tauV 
+       *** Omega=60deg:     pV, pVmax =  0.6216 0.6760
+       *** at 850: w (mu) Ipol, Itot  =  850.0   6.180E-15   2.811E-13
+  
+                       tauV    P_Serk  pV      p850/pV     p850/pV/tauV
+  Pol (Omega=60deg)    1.021   1.510   0.622   1.456           1.487
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  +++ Dark dust model (Siebennmorgen 2023 A&A, 670A, 115                     +++
+  +++ Amount of dark dust: Eq.2,3 in SC 2023 doi: 10.48550/arXiv.2311.03310) +++
+  +++               jsmD2              DONE                     ++++++++++
+         

@@ -1,0 +1,31 @@
+Library of cross section files for amorphous carbon (aC), silicates (Si), 
+and dark dust (Dk).
+Filenames are encoded like:
+
+d.{type}{porosity}ab{axis ratio}{alignment efficiency}
+
+Where {porosity} is in percent and:
+    Dk:     porosity = vvac, e.g. Dk05 → vvac = 0.05
+    aC, Si: porosity = por,  e.g. aC30 → por  = 0.30
+
+and
+    {alignment efficiency}:
+            d00 → del0 = 0.2
+            d01 → del0 = 1.0
+            pdg for PDG alignment
+
+
+example:
+
+d.aC10ab3.0d10:
+    type = aC
+    por = 0.1
+    ab = 3.0
+    del0 = 10.0
+
+
+d.Dk50ab2.5d01:
+    type = Dk
+    vvac = 0.5
+    ab = 2.5
+    del0 = 1.0
