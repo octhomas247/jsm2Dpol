@@ -3,13 +3,8 @@
 TARGET=$1
 NOSCREEN=$2  # optional second argument
 
-# IDL_VARS=""
-# if [ "$NOSCREEN" = "noscreen" ]; then
-#   IDL_VARS="noscreen=1"
-# fi
-
 # Create temporary IDL script
-echo "; ==== JISMO startup ===="                         >  temp_idl_input.pro
+echo "; ==== JISMO startup ===="                       >  temp_idl_input.pro
 echo "COMMON jismo_flags, noscreen"                    >> temp_idl_input.pro
 echo "noscreen = 0"                                    >> temp_idl_input.pro
 

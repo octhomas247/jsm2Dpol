@@ -329,7 +329,7 @@ save, /xdr, filename='./ResultRsv/'+ target+'_para.xdr', $
     
         PRINT, ' Result of reddening fit in plot :  pl_allReddbestchi2pol.pdf'
         SPAWN, 'ps2pdf idl_bestchi2pol.ps pl_allReddbestchi2pol.pdf'
-        SPAWN, 'cp pl_allRedd.pdf ./ResultRsv/'+target+'_model.pdf'
+        SPAWN, 'cp pl_allReddbestchi2pol.pdf ./ResultRsv/'+target+'_model.pdf'
         PRINT, ' *** Done: Results in ./ResultRsv/'+target+'_model.pdf ./ResultRsv/'+target+'_model.info for Model = ', model
     
         !p.multi = 0

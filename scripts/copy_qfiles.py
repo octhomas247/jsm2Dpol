@@ -2,25 +2,6 @@
 import shutil
 from pathlib import Path
 
-# def encode_vfrac(value):
-#     return f"{int(round(float(value) * 100)):02d}"
-
-# def encode_del0(del0_str):
-#     if del0_str.lower() == "pdg":
-#         return "pdg"
-#     else:
-#         return f"d{int(round(float(del0_str))):02d}"
-
-# def construct_filename(typ, por, vvac, ab, del0_code):
-#     if typ == "Dk":
-#         mid = vvac
-#     else:
-#         mid = por
-#     return f"d.{typ}{mid}ab{ab}{del0_code}"
-
-# def prompt_with_default(prompt, default):
-#     val = input(f"{prompt} [{default}]: ").strip()
-#     return val if val else default
 def encode_vfrac(val):
     return f"{int(float(val) * 100):02d}"
 
@@ -52,15 +33,9 @@ def main():
     ab_str = ab
     del0_code = encode_del0(del0)
 
-    # por = encode_vfrac(input("Porosity (e.g. 0.0): "))
-    # vvac = encode_vfrac(input("Vacuum fraction (e.g. 0.05): "))
-    # ab   = input("Axis ratio a/b (e.g. 1.5): ")
-    # del0_code = encode_del0(input("del0 (e.g. 00.2 or pdg): "))
-
     input_dir.mkdir(parents=True, exist_ok=True)
 
     # Map of types to desired destination filenames
-    # Determine filenames
     files = {
         "Dark": f"d.Dk{vvac_code}ab{ab_str}{del0_code}",
         "aC":   f"d.aC{por_code}ab{ab_str}{del0_code}",
