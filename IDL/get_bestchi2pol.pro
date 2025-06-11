@@ -285,6 +285,7 @@ save, /xdr, filename='./ResultRsv/'+ target+'_para.xdr', $
          !P.font = 0  ; Use 0 (PostScript font) for PS, or 7 for screen
          
          IF noscreen EQ 0 THEN BEGIN
+             set_plot, 'X'
              !P.font = 7  ; override for screen mode
              window, 0, xsize=700, ysize=700
          ENDIF
@@ -321,21 +322,21 @@ save, /xdr, filename='./ResultRsv/'+ target+'_para.xdr', $
 
     ; ----- Convert PostScript to PDF -----
     IF keyword_set(ps) THEN BEGIN
-        device, /close  ; Close PS device
-        IF noscreen EQ 0 THEN BEGIN
-            set_plot, 'X'
-            device, decomposed=1
-        ENDIF
-    
-        PRINT, ' Result of reddening fit in plot :  pl_allReddbestchi2pol.pdf'
-        SPAWN, 'ps2pdf idl_bestchi2pol.ps pl_allReddbestchi2pol.pdf'
-        SPAWN, 'cp pl_allReddbestchi2pol.pdf ./ResultRsv/'+target+'_model.pdf'
-        PRINT, ' *** Done: Results in ./ResultRsv/'+target+'_model.pdf ./ResultRsv/'+target+'_model.info for Model = ', model
-    
-        !p.multi = 0
+    device, /close
+    PRINT, ' Result of reddening fit in plot :  pl_allReddbestchi2pol.pdf'
+    SPAWN, 'ps2pdf idl_bestchi2pol.ps pl_allReddbestchi2pol.pdf'
+    SPAWN, 'cp pl_allReddbestchi2pol.pdf ./ResultRsv/'+target+'_model.pdf'
+    PRINT, ' *** Done: Results in ./ResultRsv/'+target+'_model.pdf ./ResultRsv/'+target+'_model.info for Model = ', model
     ENDIF ELSE BEGIN
-        PRINT, ' *** Done: NO PLOT  Results in ./ResultRsv/'+target+'_model.info for Model = ', model
+    PRINT, ' *** Done: NO PLOT  Results in ./ResultRsv/'+target+'_model.info for Model = ', model
     ENDELSE
+
+    ; Restore GUI device if needed
+    IF noscreen EQ 0 THEN BEGIN
+    set_plot, 'X'
+    device, decomposed=1
+    !p.multi = 0
+    ENDIF
 
 end
 

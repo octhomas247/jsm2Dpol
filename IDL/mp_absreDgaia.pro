@@ -503,6 +503,7 @@ Pro mp_absreDgaia,  target, Vmag, Ebv_ref, Mv, Dgaia, ps=ps, no_mpfit=no_mpfit
 @jismo_noscreen.inc
 if not keyword_set(no_mpfit) then no_mpfit = 0
 IF noscreen EQ 0 THEN BEGIN
+  set_plot, 'X'
   window, 0, xsize=700, ysize=700
   !p.thick = 2
   !p.charsize = 1.3

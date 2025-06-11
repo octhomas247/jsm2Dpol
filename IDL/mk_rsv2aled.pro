@@ -46,17 +46,14 @@ aled_old = aled
   arad_polmax = aled
 
   if keyword_set(ps) then begin
-    if noscreen NE 0 then begin
-      set_plot, 'PS'
-      device, filename='mk_rsv2aled.ps', /COLOR
-    endif
+    set_plot, 'PS'
+    device, filename='mk_rsv2aled.ps', /COLOR
+  endif else if noscreen EQ 0 then begin
+    set_plot, 'X'
+    window, 0, xsize=700, ysize=700  ; if needed
   endif
+  plot, wpd, pdata, psym=4, /ysty
 
-  if keyword_set(ps) then begin
-plot, wpd, pdata, psym=4, /ysty
-endif else if noscreen EQ 0 then begin
-    plot, wpd, pdata, psym=4, /ysty
-endif
 ; alec, alesi as fixed parameters:
 for i = nr-1, 0, -1 do begin
 
@@ -125,11 +122,7 @@ c2rppled(i)   = (rppled(i) - orpp)^2/oerpp^2
 ; print, format='(a10,i7, 2f7.2, f9.3)', target, nint(rled(i)*1e7), rsvled(i), c2rsvled(i), c2rled(i)
 
 
-if keyword_set(ps) then begin
-    oplot, wpd, pm, linesty=i mod 2
-endif else if noscreen EQ 0 then begin
-        oplot, wpd, pm, linesty=i mod 2
-    endif
+oplot, wpd, pm, linesty=i mod 2
 
 endfor
 
@@ -239,12 +232,19 @@ save, filename='./Result/'+target+'_Rsvled.xdr', rled, rsvled, Rppled, c2rsvled,
  spawn, 'mv message.out           ./Result/'+ target+'_message.out'
 
  if keyword_set(ps) then begin
-    if noscreen NE 0 then begin
-      device, /close
-      spawn, 'ps2pdf mk_rsv2aled.ps mk_rsv2aled.pdf'
+    device, /close  ; Always close PS device
+  
+    ; Restore GUI plotting for screen users
+    if noscreen EQ 0 then begin
+      set_plot, 'X'
+      device, decomposed=1
+      !p.multi = 0  ; Reset multi-plot if used earlier
     endif
+  
+    spawn, 'ps2pdf mk_rsv2aled.ps mk_rsv2aled.pdf'
+    print, 'Plot saved to mk_rsv2aled.pdf'
   endif
-
+  
   close, /all
 
   if oI850 eq 1. then print, 'Rpp not used I850 (MJy/sr) unknown in ./Cat/mk_ForsdPlanck, check get_pol2xdr'

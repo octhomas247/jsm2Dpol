@@ -1,34 +1,31 @@
 # Ignore everything by default
 *
 
-# Allow key files in root
+# Allow root files
 !Makefile
 !README.md
 !HD027778.png
 
-# Allow folders, but not their contents unless specified
-!Data/
-!IDL/
-!Qfile/
-!scripts/
-!src/
-!models/
+# Allow full folder contents
+!Data/**
+!IDL/**
+!Qfile/**
+!scripts/**
+!example/**
 
-# Allow specific files in src (e.g., Fortran source)
+# Allow only specific files in src/
+!src/
 !src/*.f90
 
-# Prevent committing contents of models/
+# Include models/ folder, but ignore its contents
+!models/
 models/*
+!models/.gitkeep
 
 # Ignore build outputs and intermediate files
 af90.j
 *.o
 *.mod
-
-# Retain specific generated file in example (optional)
-!example/
-!example/**
-!example/af90.j
 
 # Optional: ignore logs or editor backups
 # *.log

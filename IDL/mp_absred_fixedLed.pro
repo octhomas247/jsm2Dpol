@@ -51,6 +51,7 @@ Pro  mp_absred_fixedLed, target, ps=ps, no_mpfit=no_mpfit
 @jismo_noscreen.inc
 
 IF noscreen EQ 0 THEN BEGIN
+    set_plot, 'X'
     window, 0, xsize=700, ysize=700
     !p.thick = 2
     !p.charsize = 1.3

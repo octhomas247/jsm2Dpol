@@ -10,7 +10,6 @@ SRC = src/jsm_utils.f90 \
 OBJ = $(SRC:src/%.f90=build/%.o)
 MODDIR = build
 BINDIR = build
-# BIN = $(BINDIR)/af90.j
 BIN = $(BINDIR)/af90.j
 
 all: $(BIN)
