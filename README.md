@@ -72,7 +72,7 @@ Used for aligned, non-spherical dust grains (e.g. carbon, silicate, or “dark d
 * `Qmean CPL`: Circular polarization
 * `Qmean SCA`: Mean scattering efficiency
 
-> A library of different d.Qellip* files for different dust parameters is included within this repository within the ./Qfile/ folder.
+> A library of *d.Qellip\** files for different dust parameters is included within this repository within the *./Qfile/* folder.
 
 • **Spherical grains (d.Qmie\*)**
 
