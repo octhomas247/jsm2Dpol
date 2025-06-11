@@ -48,6 +48,8 @@ The JSM model expects the following inputs:
 <details>
 <summary>Show Input File Description</summary>
 
+---
+
 These files provide grain-specific optical properties (cross-sections) as a function of **wavelength** and **grain radius**, and are required for calculating extinction, scattering, and polarization.
 
 Two types of Q-files are needed:
@@ -100,6 +102,8 @@ Used for unaligned spherical grains (e.g. PAHs or graphite). Calculated using **
 <details>
 <summary>Show Input File Description</summary>
 
+---
+
 Defines the dust grain **composition**, **abundances**, and **size distribution** for each dust component used in the model. The file contains a single line of whitespace-separated parameters:
 
 | Parameter       | Description                                                                 |
@@ -126,6 +130,8 @@ Defines the dust grain **composition**, **abundances**, and **size distribution*
 <details>
 <summary>Show Input File Description</summary>
 
+---
+
 Provides observed reference values for extinction and polarization used to evaluate the model performance. Each line contains three values:
 
 | Parameter   | Description                                                              |
@@ -143,6 +149,8 @@ Provides observed reference values for extinction and polarization used to evalu
 <details>
 <summary>Show Input File Description</summary>
 
+---
+
 Defines the wavelength sampling (in cm) used in the model calculations. The file contains 283 values, listed in descending order from 1 cm down to 9.08 × 10⁻⁶ cm, with one wavelength per line.
 
 > All extinction, polarization, and emission quantities are computed across this grid.
@@ -153,6 +161,8 @@ Defines the wavelength sampling (in cm) used in the model calculations. The file
 
 <details>
 <summary>Show Input File Description</summary>
+
+---
 
 Contains the **Drude profile parameters** used to model the PAH absorption bump near 2175 Å. Each line defines:
 
@@ -171,6 +181,8 @@ Contains the **Drude profile parameters** used to model the PAH absorption bump 
 
 <details>
 <summary>Show Output File Description</summary>
+
+---
 
 These files list modeled cross-sections (in cm²/g) per dust component.
 
@@ -201,6 +213,8 @@ Dust components:
 <details>
 <summary>Show Output File Description</summary>
 
+---
+
 Lists the modeled **polarization cross-sections** (`sigp_*`) for aligned dust grains across the wavelength grid. These values determine the polarization efficiency of each dust component.
 
 | Column       | Description                                 |
@@ -220,6 +234,8 @@ Lists the modeled **polarization cross-sections** (`sigp_*`) for aligned dust gr
 <details>
 <summary>Show Output File Description</summary>
 
+---
+
 Contains modeled extinction and reddening information, matched to observational wavelengths.
 
 | Column         | Description                                                  |
@@ -237,6 +253,8 @@ Contains modeled extinction and reddening information, matched to observational 
 
 <details>
 <summary>Show Output File Description</summary>
+
+---
 
 Contain modeled dust emission per unit mass, across wavelengths.
 
