@@ -56,7 +56,7 @@ Two types of Q-files are needed:
 
 Used for aligned, non-spherical dust grains (e.g. carbon, silicate, or “dark dust”). These files are computed using the **Imperfect Davis-Greenstein (IDG)** alignment model and include:
 
-• `por`: Porosity (vacuum fraction) of the grain mixture
+• `por`, `vvac`: Porosity (vacuum fraction) of the grain mixture
 
 • `a/b`: Axis ratio of the ellipsoids
 
@@ -71,6 +71,8 @@ Used for aligned, non-spherical dust grains (e.g. carbon, silicate, or “dark d
 * `Qmean POL`: Mean polarization efficiency
 * `Qmean CPL`: Circular polarization
 * `Qmean SCA`: Mean scattering efficiency
+
+> A library of different d.Qellip* files for different dust parameters is included within this repository within the ./Qfile/ folder.
 
 • **Spherical grains (d.Qmie\*)**
 
