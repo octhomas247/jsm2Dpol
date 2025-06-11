@@ -1,6 +1,6 @@
 # JISMO: Joint IDL and Scattering Modeling of Dust Sightlines/Joint Interstellar Sightline Model
 
-**JISMO** is a joint IDL–Fortran toolkit for modeling polarized dust properties along individual interstellar sightlines.It was developed and applied in the context of the [LIPS III](#applications-and-citation) study, where it was used to model interstellar dust based on reddening, polarization, and dust emission, using FORS spectra and other observations.
+**JISMO** is a joint IDL–Fortran toolkit for modeling polarized dust properties along individual interstellar sightlines. It was developed and applied in the context of the [LIPS III](#applications-and-citation) study, where it was used to model interstellar dust based on reddening, polarization, and dust emission, using FORS spectra and other observations.
 
 ![](./HD027778.png?raw=true "JISMO Header")
 
