@@ -387,8 +387,8 @@ The repository also includes:
 
 In this paper, JISMO was applied to:
 
-* **26 stars** with high-quality 912 $\AA$ - 2.2 μm reddening curves and visual extinction $A_V$ constrained by Gaia parallaxes and optical FORS spectro-polarimetry.
-* **3 stars** with high-quality 912 $\AA$ - 2.2 μm reddening curves, visual extinction $A_V$ constrained by Gaia parallaxes, optical FORS spectro-polarimetry, and total and polarized dust emission at 850 μm from Planck.
+* **26 stars** with high-quality 912 Å - 2.2 μm reddening curves and visual extinction $A_V$ constrained by Gaia parallaxes and optical FORS spectro-polarimetry.
+* **3 stars** with high-quality 912 Å - 2.2 μm reddening curves, visual extinction $A_V$ constrained by Gaia parallaxes, optical FORS spectro-polarimetry, and total and polarized dust emission at 850 μm from Planck.
 
 If you use **JISMO** for scientific research, please cite the above publication and mention your use of the pipeline.
 
