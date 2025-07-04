@@ -28,7 +28,7 @@ jismo/
 │   └── Init/       # Initialization input files for modeling
 ├── IDL/            # IDL routines and fitting scripts
 ├── models/         # Output folders for individual JISMO model runs (one per target)
-├── Qfile/          # d.Q input library (dust cross section data by type)
+├── Qfile/          # d.Q input library (dust cross section data by grain type)
 ├── scripts/        # Shell and Python helper scripts
 ├── src/            # Fortran90 source code for JSM
 ├── example/        # Example standalone JSM model
@@ -387,8 +387,8 @@ The repository also includes:
 
 In this paper, JISMO was applied to:
 
-* **3 stars** with full polarization and dust emission constraints (incl. Planck 850 μm)
-* **24 additional targets** with limited polarization data and fixed dark dust parameters
+* **26 stars** with high-quality 912 $\AA$ - 2.2 μm reddening curves and visual extinction $A_V$ constrained by Gaia parallaxes and optical FORS spectro-polarimetry.
+* **3 stars** with high-quality 912 $\AA$ - 2.2 μm reddening curves, visual extinction $A_V$ constrained by Gaia parallaxes, optical FORS spectro-polarimetry, and total and polarized dust emission at 850 μm from Planck.
 
 If you use **JISMO** for scientific research, please cite the above publication and mention your use of the pipeline.
 
